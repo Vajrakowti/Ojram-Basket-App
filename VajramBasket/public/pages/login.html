@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Vajram Basket</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f8f8f8;
+            font-family: Arial, sans-serif;
+        }
+        .login-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background: #0056b3;
+        }
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 1rem;
+                max-width: 95vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="username" name="username" placeholder="Username" required pattern="^[A-Za-z\s]+$" title="Letters and spaces only" />
+            <input type="text" id="phone" name="phone" placeholder="Phone Number" required inputmode="numeric" pattern="^\d+$" title="Digits only" />
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <script>
+        const usernameInput = document.getElementById('username');
+        const phoneInput = document.getElementById('phone');
+
+        // Live sanitize inputs
+        usernameInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^A-Za-z\s]/g, '');
+        });
+        phoneInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^\d]/g, '');
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            const phone = phoneInput.value.trim();
+
+            const alphaRegex = /^[A-Za-z\s]+$/;
+            const digitRegex = /^\d+$/;
+
+            if (!alphaRegex.test(username)) {
+                alert('Username must contain letters and spaces only.');
+                return;
+            }
+            if (!digitRegex.test(phone)) {
+                alert('Phone number must contain digits only.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/user/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, phone })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.error || 'Login failed');
+                    return;
+                }
+                if (data.userDbName) {
+                    localStorage.setItem('userDbName', data.userDbName);
+                }
+                window.location.href = data.redirect || 'pages/home.html';
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('Server error during login');
+            }
+        });
+    </script>
+</body>
+</html> 

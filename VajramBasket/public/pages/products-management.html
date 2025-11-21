@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Management - VajramBasket Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: flex-start;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header-logo img {
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .offcanvas-header.flex-column.align-items-start {
+            align-items: center !important;
+            justify-content: center;
+            padding-top: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .offcanvas-header img {
+            display: block;
+            margin: 0 auto;
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+        }
+        .offcanvas-body {
+            padding-top: 24px;
+        }
+        .offcanvas .nav-link {
+            font-size: 1.1rem;
+            padding: 12px 0;
+            color: #333;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .offcanvas .nav-link:hover, .offcanvas .nav-link.active {
+            background: #f3f3fa;
+            color: #6c63ff;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom {
+                padding: 0.5rem 0.5rem;
+            }
+            .header-logo img {
+                height: 48px;
+                width: auto;
+            }
+        }
+        body {
+            background: #f8f9fa;
+        }
+        .admin-main-content {
+            padding-bottom: 30px;
+        }
+        .product-image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-logo">
+                <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="header-icon" type="button" onclick="window.location.href='admin.html'">
+                <i class="fas fa-home"></i>
+            </button>
+        </div>
+    </nav>
+    <!-- Side Navigation (Offcanvas) -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sideNav">
+        <div class="offcanvas-header flex-column align-items-start">
+            <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="admin.html"><i class="fas fa-home me-2"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="categories.html"><i class="fas fa-th-large me-2"></i>Categories</a></li>
+                <li class="nav-item"><a class="nav-link" href="banner-management.html"><i class="fas fa-images me-2"></i>Banners</a></li>
+                <li class="nav-item"><a class="nav-link active" href="products-management.html"><i class="fas fa-box me-2"></i>Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="orders-management.html"><i class="fas fa-shopping-bag me-2"></i>Orders</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container mt-4 admin-main-content">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Add New Product</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="productForm">
+                            <div class="mb-3">
+                                <label for="productImage" class="form-label">Product Image</label>
+                                <input type="file" class="form-control" id="productImage" accept="image/*" required>
+                                <img id="imagePreview" class="mt-2 product-image-preview d-none" alt="Preview">
+                            </div>
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="productName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label">Price (₹)</label>
+                                <input type="number" class="form-control" id="productPrice" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productWeight" class="form-label">Weight</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="productWeight" required>
+                                    <select class="form-select" id="weightUnit" required>
+                                        <option value="g">g</option>
+                                        <option value="kg">kg</option>
+                                        <option value="ml">ml</option>
+                                        <option value="l">l</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productCategory" class="form-label">Category</label>
+                                <select class="form-select" id="productCategory" required>
+                                    <option value="fruits">Fruits & Vegetables</option>
+                                    <option value="grocery">Grocery & Staples</option>
+                                    <option value="beverages">Beverages</option>
+                                    <option value="personal">Personal Care</option>
+                                    <option value="home">Home Care</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Product</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Product List</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Weight</th>
+                                        <th>Category</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productList">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image preview
+            const productImage = document.getElementById('productImage');
+            const imagePreview = document.getElementById('imagePreview');
+
+            productImage.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Form submission
+            const productForm = document.getElementById('productForm');
+            productForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const formData = new FormData();
+                formData.append('image', productImage.files[0]);
+                formData.append('name', document.getElementById('productName').value);
+                formData.append('price', document.getElementById('productPrice').value);
+                formData.append('weight', document.getElementById('productWeight').value);
+                formData.append('weightUnit', document.getElementById('weightUnit').value);
+                formData.append('category', document.getElementById('productCategory').value);
+
+                try {
+                    const response = await fetch('/api/products', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert('Product added successfully!');
+                        productForm.reset();
+                        imagePreview.classList.add('d-none');
+                        loadProducts();
+                    } else {
+                        alert('Error adding product');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error adding product');
+                }
+            });
+
+            // Load products
+            async function loadProducts() {
+                try {
+                    const response = await fetch('/api/products');
+                    const products = await response.json();
+                    
+                    const productList = document.getElementById('productList');
+                    productList.innerHTML = '';
+
+                    products.forEach(product => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                            <td>${product.name}</td>
+                            <td>₹${product.price}</td>
+                            <td>${product.weight}${product.weightUnit}</td>
+                            <td>${product.category}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deleteProduct('${product._id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        productList.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            // Delete product
+            window.deleteProduct = async function(productId) {
+                if (confirm('Are you sure you want to delete this product?')) {
+                    try {
+                        const response = await fetch(`/api/products/${productId}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (response.ok) {
+                            alert('Product deleted successfully!');
+                            loadProducts();
+                        } else {
+                            alert('Error deleting product');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error deleting product');
+                    }
+                }
+            };
+
+            // Initial load
+            loadProducts();
+        });
+    </script>
+</body>
+</html>
+

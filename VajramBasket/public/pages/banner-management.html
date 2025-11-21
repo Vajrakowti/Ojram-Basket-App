@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banner Management - VajramBasket Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: flex-start;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header-logo img {
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .offcanvas-header.flex-column.align-items-start {
+            align-items: center !important;
+            justify-content: center;
+            padding-top: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .offcanvas-header img {
+            display: block;
+            margin: 0 auto;
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+        }
+        .offcanvas-body {
+            padding-top: 24px;
+        }
+        .offcanvas .nav-link {
+            font-size: 1.1rem;
+            padding: 12px 0;
+            color: #333;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .offcanvas .nav-link:hover, .offcanvas .nav-link.active {
+            background: #f3f3fa;
+            color: #6c63ff;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom {
+                padding: 0.5rem 0.5rem;
+            }
+            .header-logo img {
+                height: 48px;
+                width: auto;
+            }
+        }
+        body {
+            background: #f8f9fa;
+        }
+        .admin-main-content {
+            padding-bottom: 30px;
+        }
+        .banner-card {
+            position: relative;
+            margin-bottom: 15px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .banner-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .delete-banner-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .delete-banner-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Back Button (no side nav, no home icon) -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" onclick="window.location.href='admin.html'" title="Back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-logo">
+                <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            </div>
+        </div>
+        <div class="header-right"></div>
+    </nav>
+
+    <!-- Banner Upload Section -->
+    <div class="container mt-4 admin-main-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Upload Banner Images</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="bannerForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input type="file" class="form-control" id="bannerImages" name="banners" accept="image/*" multiple required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </form>
+                        <div class="text-muted small mt-2">For best results, upload wide, panoramic images (at least 1200x500px) for the view pager banner.</div>
+                        <div id="bannerUploadMsg" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Uploaded Banners -->
+        <div class="row">
+            <div class="col-12">
+                <h5 class="mb-3">Uploaded Banners</h5>
+                <div id="uploadedBanners" class="row"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Banner upload logic
+            const bannerForm = document.getElementById('bannerForm');
+            const bannerImages = document.getElementById('bannerImages');
+            const bannerUploadMsg = document.getElementById('bannerUploadMsg');
+            const uploadedBanners = document.getElementById('uploadedBanners');
+
+            bannerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData();
+                for (let i = 0; i < bannerImages.files.length; i++) {
+                    formData.append('banners', bannerImages.files[i]);
+                }
+                try {
+                    const response = await fetch('/api/admin/banners', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (response.ok) {
+                        bannerUploadMsg.textContent = 'Banners uploaded successfully!';
+                        bannerUploadMsg.className = 'mt-2 text-success';
+                        bannerForm.reset();
+                        loadBanners();
+                    } else {
+                        bannerUploadMsg.textContent = 'Error uploading banners.';
+                        bannerUploadMsg.className = 'mt-2 text-danger';
+                    }
+                } catch (err) {
+                    bannerUploadMsg.textContent = 'Error uploading banners.';
+                    bannerUploadMsg.className = 'mt-2 text-danger';
+                }
+            });
+
+            async function loadBanners() {
+                try {
+                    const res = await fetch('/api/admin/banners');
+                    const data = await res.json();
+                    uploadedBanners.innerHTML = '';
+                    if (data.banners.length === 0) {
+                        uploadedBanners.innerHTML = '<div class="col-12"><p class="text-muted">No banners uploaded yet.</p></div>';
+                    } else {
+                        data.banners.forEach(banner => {
+                            const url = banner.path;
+                            const id = banner._id;
+                            const col = document.createElement('div');
+                            col.className = 'col-md-4';
+                            const card = document.createElement('div');
+                            card.className = 'card banner-card';
+                            card.innerHTML = `
+                                <img src="${url}" alt="Banner">
+                                <button class="delete-banner-btn" onclick="deleteBanner('${id}', this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            `;
+                            col.appendChild(card);
+                            uploadedBanners.appendChild(col);
+                        });
+                    }
+                } catch (err) {
+                    uploadedBanners.innerHTML = '<div class="col-12"><span class="text-danger">Could not load banners.</span></div>';
+                }
+            }
+
+            window.deleteBanner = async function(bannerId, btn) {
+                if (confirm('Are you sure you want to delete this banner?')) {
+                    try {
+                        const resp = await fetch(`/api/admin/banners/${bannerId}`, { method: 'DELETE' });
+                        if (resp.ok) {
+                            btn.closest('.col-md-4').remove();
+                            // Check if no banners left
+                            if (uploadedBanners.querySelectorAll('.col-md-4').length === 0) {
+                                uploadedBanners.innerHTML = '<div class="col-12"><p class="text-muted">No banners uploaded yet.</p></div>';
+                            }
+                        } else {
+                            alert('Error deleting banner');
+                        }
+                    } catch (err) {
+                        alert('Error deleting banner');
+                    }
+                }
+            };
+
+            loadBanners();
+        });
+    </script>
+</body>
+</html>
+

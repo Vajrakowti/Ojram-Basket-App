@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - VajramBasket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: #fff;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .header-icon.fav {
+            color: #e53935;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 64px;
+            padding-bottom: 120px;
+        }
+        
+        /* Product Image */
+        .product-image-section {
+            width: 100%;
+            height: 300px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* Product Info */
+        .product-info-section {
+            padding: 20px 16px;
+        }
+        
+        
+        .product-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 8px;
+        }
+        
+        .product-quantity {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .price-section {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .current-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #222;
+        }
+        
+        .mrp {
+            color: #999;
+            text-decoration: line-through;
+            font-size: 16px;
+        }
+        
+        .discount-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .view-details-link {
+            color: #4caf50;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .view-details-link:hover {
+            color: #388e3c;
+        }
+        
+        .view-details-link i {
+            transition: transform 0.3s ease;
+        }
+        
+        .view-details-link.open i {
+            transform: rotate(180deg);
+        }
+        
+        .product-description {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .product-description.open {
+            max-height: 200px;
+            margin-bottom: 24px;
+        }
+        
+        .description-content {
+            padding: 16px;
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            white-space: pre-line;
+        }
+        
+        /* People Also Bought */
+        .people-also-bought {
+            padding: 0 16px 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+            margin: 20px 0 16px 0;
+        }
+        
+        .products-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #4caf50 #f0f0f0;
+        }
+        
+        .products-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .products-scroll::-webkit-scrollbar-thumb {
+            background: #4caf50;
+            border-radius: 3px;
+        }
+        
+        .products-scroll::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+        
+        .related-product-card {
+            min-width: 160px;
+            max-width: 180px;
+            flex-shrink: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .related-product-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        
+        .related-product-info {
+            padding: 12px;
+        }
+        
+        .related-product-weight {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .related-product-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        
+        .related-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin: 6px 0 10px 0;
+        }
+        .related-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: #222;
+        }
+        .related-mrp {
+            font-size: 12px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        
+        .related-discount {
+            color: #4caf50;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .related-add-btn {
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .related-fav-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            color: #e53935;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .see-all-container {
+            text-align: center;
+            margin: 8px 16px 0 16px;
+        }
+        .see-all-link {
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* Sticky Footer */
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 16px;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left {
+            flex: 1;
+        }
+        
+        .footer-quantity {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .footer-price {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .footer-current-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+        
+        .footer-mrp {
+            color: #999;
+            text-decoration: line-through;
+            font-size: 14px;
+        }
+        
+        .footer-discount {
+            color: #4caf50;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .footer-taxes {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .add-to-cart-btn {
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .product-image-section {
+                height: 250px;
+            }
+            
+            .product-name {
+                font-size: 20px;
+            }
+            
+            .current-price {
+                font-size: 24px;
+            }
+            
+            .related-product-card {
+                min-width: 140px;
+            }
+            
+            .related-product-image {
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.history.back()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div class="header-right">
+            <button class="header-icon fav" id="favoriteBtn">
+                <i class="far fa-heart"></i>
+            </button>
+            <button class="header-icon" id="searchBtn">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="header-icon" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+            <button class="header-icon">
+                <i class="fas fa-share"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Product Image -->
+        <div class="product-image-section">
+            <img id="productImage" class="product-image" alt="Product">
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-info-section">
+            <h1 class="product-name" id="productName"></h1>
+            <div class="product-quantity" id="productQuantity"></div>
+            
+            <div class="price-section">
+                <span class="current-price" id="currentPrice"></span>
+                <span class="mrp" id="mrp"></span>
+                <span class="discount-tag" id="discountTag" style="display: none;"></span>
+            </div>
+            
+            <a href="#" class="view-details-link" id="viewDetailsLink">
+                View product details
+                <i class="fas fa-chevron-down"></i>
+            </a>
+
+            <div class="product-description" id="productDescription">
+                <div class="description-content" id="descriptionContent">
+                    <!-- Description will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- People Also Bought -->
+        <div class="people-also-bought">
+            <h3 class="section-title">More from this category</h3>
+            <div class="products-scroll" id="relatedProducts">
+                <!-- Related products will be loaded here -->
+            </div>
+            <div class="see-all-container">
+                <a id="seeAllLink" class="see-all-link" href="#">See all products <i class="fas fa-chevron-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Footer -->
+    <div class="sticky-footer">
+        <div class="footer-left">
+            <div class="footer-quantity" id="footerQuantity"></div>
+            <div class="footer-price">
+                <span class="footer-current-price" id="footerCurrentPrice"></span>
+                <span class="footer-mrp" id="footerMrp"></span>
+                <span class="footer-discount" id="footerDiscount"></span>
+            </div>
+            <div class="footer-taxes">Inclusive of all taxes</div>
+        </div>
+        <button class="add-to-cart-btn" onclick="addToCart()">Add to cart</button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryName = urlParams.get('category');
+        const productId = urlParams.get('id');
+        
+        let currentProduct = null;
+        let favoriteMap = {};
+        let cartMap = {};
+
+        // Load product details
+        async function loadProductDetails() {
+            try {
+                const res = await fetch(`/api/home/products/${encodeURIComponent(categoryName)}/${productId}`);
+                if (!res.ok) throw new Error('Failed to fetch product');
+                
+                currentProduct = await res.json();
+                displayProduct();
+                loadRelatedProducts();
+                checkFavoriteStatus();
+                // Always refresh cart data to get latest state
+                await loadCartItems();
+            } catch (err) {
+                console.error('Error loading product:', err);
+                alert('Error loading product details');
+            }
+        }
+
+        // Load cart items
+        async function loadCartItems() {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) return;
+                
+                const res = await fetch('/api/home/cart', {
+                    headers: { 'x-user-db': userDbName }
+                });
+                if (!res.ok) return;
+                
+                const cartItems = await res.json();
+                cartMap = {};
+                cartItems.forEach(item => {
+                    cartMap[item.productId] = item.quantity;
+                });
+                
+                updateCartButtons();
+            } catch (err) {
+                console.error('Error loading cart:', err);
+            }
+        }
+
+        // Display product information
+        function displayProduct() {
+            if (!currentProduct) return;
+            
+            document.getElementById('productImage').src = currentProduct.image;
+            document.getElementById('productName').textContent = currentProduct.name;
+            document.getElementById('productQuantity').textContent = currentProduct.weight ? `${currentProduct.weight}${currentProduct.weightUnit}` : '1 piece';
+            
+            // Display description if available
+            const descriptionContent = document.getElementById('descriptionContent');
+            if (currentProduct.description && currentProduct.description.trim()) {
+                descriptionContent.textContent = currentProduct.description;
+            } else {
+                descriptionContent.textContent = 'No description available for this product.';
+            }
+            
+            const mrp = parseFloat(currentProduct.mrp || currentProduct.price);
+            const currentPrice = parseFloat(currentProduct.price);
+            
+            document.getElementById('currentPrice').textContent = `₹${currentPrice}`;
+            if (mrp > currentPrice) {
+                document.getElementById('mrp').textContent = `MRP ₹${mrp}`;
+                const discount = Math.round((mrp - currentPrice) / mrp * 100);
+                document.getElementById('discountTag').textContent = `${discount}% OFF`;
+                document.getElementById('discountTag').style.display = 'inline-block';
+            } else {
+                document.getElementById('mrp').style.display = 'none';
+                document.getElementById('discountTag').style.display = 'none';
+            }
+            
+            // Footer
+            document.getElementById('footerQuantity').textContent = currentProduct.weight ? `${currentProduct.weight}${currentProduct.weightUnit}` : '1 piece';
+            document.getElementById('footerCurrentPrice').textContent = `₹${currentPrice}`;
+            if (mrp > currentPrice) {
+                document.getElementById('footerMrp').textContent = `MRP ₹${mrp}`;
+                const discount = Math.round((mrp - currentPrice) / mrp * 100);
+                document.getElementById('footerDiscount').textContent = `${discount}% OFF`;
+                document.getElementById('footerDiscount').style.display = 'inline-block';
+            } else {
+                document.getElementById('footerMrp').style.display = 'none';
+                document.getElementById('footerDiscount').style.display = 'none';
+            }
+        }
+
+        // Load related products (all products from same category except current one)
+        async function loadRelatedProducts() {
+            try {
+                const res = await fetch(`/api/home/products/${encodeURIComponent(categoryName)}`);
+                if (!res.ok) throw new Error('Failed to fetch related products');
+                
+                const products = await res.json();
+                // Filter out current product to show all remaining products from the category
+                const filtered = products.filter(p => p._id !== productId);
+                displayRelatedProducts(filtered);
+                // Set see all link
+                const seeAll = document.getElementById('seeAllLink');
+                seeAll.href = `products-home.html?category=${encodeURIComponent(categoryName)}`;
+            } catch (err) {
+                console.error('Error loading related products:', err);
+                // Show empty state if no related products
+                const container = document.getElementById('relatedProducts');
+                container.innerHTML = '<div class="text-muted text-center">No related products available</div>';
+            }
+        }
+
+        // Display related products
+        function displayRelatedProducts(products) {
+            const container = document.getElementById('relatedProducts');
+            container.innerHTML = '';
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="text-muted text-center">No related products available</div>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'related-product-card';
+                
+                const mrp = parseFloat(product.mrp || product.price);
+                const currentPrice = parseFloat(product.price);
+                const discount = mrp > currentPrice ? Math.round((mrp - currentPrice) / mrp * 100) : 0;
+                
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="related-product-image">
+                    <div class="related-product-info">
+                        <div class="related-product-weight">${product.weight ? `${product.weight}${product.weightUnit}` : '1 piece'}</div>
+                        <div class="related-product-name">${product.name}</div>
+                        <div class="related-price-row">
+                            <span class="related-price">₹${currentPrice}</span>
+                            ${mrp > currentPrice ? `<span class="related-mrp">MRP ₹${mrp}</span>` : ''}
+                        </div>
+                        ${discount > 0 ? `<div class="related-discount">${discount}% OFF</div>` : ''}
+                    </div>
+                    <button class="related-fav-btn" onclick="toggleRelatedFavorite('${product._id}')">
+                        <i class="far fa-heart"></i>
+                    </button>
+                `;
+                
+                // Click to open product details (except favorite button)
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.related-fav-btn')) return;
+                    window.location.href = `product-detail.html?category=${encodeURIComponent(categoryName)}&id=${product._id}`;
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Check if current product is in favorites
+        async function checkFavoriteStatus() {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                const res = await fetch('/api/home/favorites', {
+                    headers: userDbName ? { 'x-user-db': userDbName } : {}
+                });
+                const favorites = await res.json();
+                const isFav = favorites.some(f => f.productId === productId);
+                
+                const favBtn = document.getElementById('favoriteBtn');
+                if (isFav) {
+                    favBtn.classList.add('active');
+                    favBtn.querySelector('i').classList.remove('far');
+                    favBtn.querySelector('i').classList.add('fas');
+                }
+            } catch (err) {
+                console.error('Error checking favorites:', err);
+            }
+        }
+
+        // Toggle favorite status
+        async function toggleFavorite() {
+            try {
+                const favBtn = document.getElementById('favoriteBtn');
+                const isFav = favBtn.classList.contains('active');
+                
+                if (!isFav) {
+                    // Add to favorites
+                    const body = {
+                        productId,
+                        category: categoryName,
+                        name: currentProduct.name,
+                        image: currentProduct.image,
+                        price: currentProduct.price,
+                        weight: currentProduct.weight || '',
+                        weightUnit: currentProduct.weightUnit || ''
+                    };
+                    
+                    const userDbName = localStorage.getItem('userDbName');
+                    const res = await fetch('/api/home/favorites', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', ...(userDbName ? { 'x-user-db': userDbName } : {}) },
+                        body: JSON.stringify(body)
+                    });
+                    
+                    if (res.ok) {
+                        favBtn.classList.add('active');
+                        favBtn.querySelector('i').classList.remove('far');
+                        favBtn.querySelector('i').classList.add('fas');
+                    }
+                } else {
+                    // Remove from favorites
+                    const userDbName = localStorage.getItem('userDbName');
+                    const res = await fetch(`/api/home/favorites/${productId}`, {
+                        method: 'DELETE',
+                        headers: userDbName ? { 'x-user-db': userDbName } : {}
+                    });
+                    
+                    if (res.ok) {
+                        favBtn.classList.remove('active');
+                        favBtn.querySelector('i').classList.remove('fas');
+                        favBtn.querySelector('i').classList.add('far');
+                    }
+                }
+            } catch (err) {
+                console.error('Error toggling favorite:', err);
+            }
+        }
+
+        // Toggle product description
+        function toggleDescription() {
+            const descriptionDiv = document.getElementById('productDescription');
+            const viewDetailsLink = document.getElementById('viewDetailsLink');
+            const icon = viewDetailsLink.querySelector('i');
+            
+            if (descriptionDiv.classList.contains('open')) {
+                // Close description
+                descriptionDiv.classList.remove('open');
+                viewDetailsLink.classList.remove('open');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                // Open description
+                descriptionDiv.classList.add('open');
+                viewDetailsLink.classList.add('open');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        }
+
+        // Update cart buttons based on cart state
+        function updateCartButtons() {
+            // Update main product add to cart button
+            const mainAddBtn = document.querySelector('.add-to-cart-btn');
+            if (mainAddBtn) {
+                const quantity = cartMap[productId] || 0;
+                console.log('Updating main product button, quantity:', quantity);
+                if (quantity > 0) {
+                    mainAddBtn.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <button class="cart-decrease-btn" data-product-id="${productId}" style="background: #4caf50; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">-</button>
+                            <span class="cart-quantity" style="font-weight: 600; min-width: 20px; text-align: center;">${quantity}</span>
+                            <button class="cart-increase-btn" data-product-id="${productId}" style="background: #4caf50; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">+</button>
+                        </div>
+                    `;
+                    // Remove any existing onclick handlers
+                    mainAddBtn.onclick = null;
+                } else {
+                    mainAddBtn.innerHTML = 'Add to cart';
+                    mainAddBtn.onclick = () => addToCart();
+                }
+            }
+            
+        }
+
+        // Add to cart functionality
+        async function addToCart() {
+            if (!currentProduct) return;
+            
+            try {
+                console.log('Adding main product to cart:', currentProduct._id);
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) {
+                    alert('Please login to add items to cart');
+                    return;
+                }
+                
+                // Update local state first
+                cartMap[productId] = (cartMap[productId] || 0) + 1;
+                updateCartButtons();
+                
+                const body = {
+                    productId: currentProduct._id,
+                    category: categoryName,
+                    name: currentProduct.name,
+                    image: currentProduct.image,
+                    price: currentProduct.price,
+                    weight: currentProduct.weight || '',
+                    weightUnit: currentProduct.weightUnit || ''
+                };
+                
+                const res = await fetch('/api/home/cart', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName 
+                    },
+                    body: JSON.stringify(body)
+                });
+                
+                if (res.ok) {
+                    console.log('Main product added to cart successfully');
+                    // Notify other tabs about cart update
+                    localStorage.setItem('cartUpdated', Date.now().toString());
+                } else {
+                    const error = await res.json();
+                    console.error('Failed to add to cart:', error);
+                    // Revert local state on error
+                    cartMap[productId] = (cartMap[productId] || 1) - 1;
+                    if (cartMap[productId] <= 0) {
+                        delete cartMap[productId];
+                    }
+                    updateCartButtons();
+                    alert('Failed to add to cart: ' + (error.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error adding to cart:', err);
+                // Revert local state on error
+                cartMap[productId] = (cartMap[productId] || 1) - 1;
+                if (cartMap[productId] <= 0) {
+                    delete cartMap[productId];
+                }
+                updateCartButtons();
+                alert('Error adding to cart');
+            }
+        }
+
+        // Update cart quantity
+        async function updateCartQuantity(productId, newQuantity) {
+            try {
+                console.log('Updating cart quantity for product:', productId, 'to:', newQuantity);
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) {
+                    alert('Please login to update cart');
+                    return;
+                }
+                
+                // Update local state first
+                if (newQuantity === 0) {
+                    delete cartMap[productId];
+                } else {
+                    cartMap[productId] = newQuantity;
+                }
+                
+                const res = await fetch(`/api/home/cart/${productId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName 
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                });
+                
+                if (res.ok) {
+                    console.log('Cart updated successfully');
+                    updateCartButtons();
+                    // Notify other tabs about cart update
+                    localStorage.setItem('cartUpdated', Date.now().toString());
+                } else {
+                    const error = await res.json();
+                    console.error('Failed to update cart:', error);
+                    // Revert local state on error
+                    if (newQuantity === 0) {
+                        cartMap[productId] = 1;
+                    } else {
+                        cartMap[productId] = newQuantity - 1;
+                    }
+                    updateCartButtons();
+                    alert('Failed to update cart: ' + (error.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error updating cart:', err);
+                // Revert local state on error
+                if (newQuantity === 0) {
+                    cartMap[productId] = 1;
+                } else {
+                    cartMap[productId] = newQuantity - 1;
+                }
+                updateCartButtons();
+                alert('Error updating cart');
+            }
+        }
+
+
+        // Toggle favorite for related products
+        async function toggleRelatedFavorite(productId) {
+            try {
+                const favBtn = event.target.closest('.related-fav-btn');
+                const isFav = favBtn.querySelector('i').classList.contains('fas');
+                
+                if (!isFav) {
+                    // Add to favorites
+                    const product = await getProductById(productId);
+                    if (!product) return;
+                    
+                    const body = {
+                        productId,
+                        category: categoryName,
+                        name: product.name,
+                        image: product.image,
+                        price: product.price,
+                        weight: product.weight || '',
+                        weightUnit: product.weightUnit || ''
+                    };
+                    
+                    const userDbName = localStorage.getItem('userDbName');
+                    const res = await fetch('/api/home/favorites', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', ...(userDbName ? { 'x-user-db': userDbName } : {}) },
+                        body: JSON.stringify(body)
+                    });
+                    
+                    if (res.ok) {
+                        favBtn.querySelector('i').classList.remove('far');
+                        favBtn.querySelector('i').classList.add('fas');
+                    }
+                } else {
+                    // Remove from favorites
+                    const userDbName = localStorage.getItem('userDbName');
+                    const res = await fetch(`/api/home/favorites/${productId}`, {
+                        method: 'DELETE',
+                        headers: userDbName ? { 'x-user-db': userDbName } : {}
+                    });
+                    
+                    if (res.ok) {
+                        favBtn.querySelector('i').classList.remove('fas');
+                        favBtn.querySelector('i').classList.add('far');
+                    }
+                }
+            } catch (err) {
+                console.error('Error toggling related product favorite:', err);
+            }
+        }
+
+        // Helper function to get product by ID
+        async function getProductById(productId) {
+            try {
+                const res = await fetch(`/api/home/products/${encodeURIComponent(categoryName)}/${productId}`);
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (err) {
+                console.error('Error fetching product:', err);
+                return null;
+            }
+        }
+
+        // Event delegation for cart buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('cart-decrease-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const currentQuantity = cartMap[productId] || 0;
+                console.log('Decrease clicked for product:', productId, 'current quantity:', currentQuantity);
+                if (currentQuantity > 0) {
+                    updateCartQuantity(productId, currentQuantity - 1);
+                }
+                return false;
+            } else if (e.target.classList.contains('cart-increase-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const currentQuantity = cartMap[productId] || 0;
+                console.log('Increase clicked for product:', productId, 'current quantity:', currentQuantity);
+                updateCartQuantity(productId, currentQuantity + 1);
+                return false;
+            }
+        });
+
+        // Refresh cart data when page becomes visible (user returns from another page)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('Page became visible, refreshing cart data...');
+                loadCartItems().then(() => {
+                    updateCartButtons();
+                });
+            }
+        });
+
+        // Also refresh cart data when page gains focus
+        window.addEventListener('focus', function() {
+            console.log('Window focused, refreshing cart data...');
+            loadCartItems().then(() => {
+                updateCartButtons();
+            });
+        });
+
+        // Listen for storage changes to sync cart between tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cartUpdated') {
+                console.log('Cart updated in another tab, refreshing...');
+                loadCartItems().then(() => {
+                    updateCartButtons();
+                });
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!categoryName || !productId) {
+                alert('Invalid product information');
+                window.history.back();
+                return;
+            }
+            
+            // Add click event listener for view details
+            document.getElementById('viewDetailsLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleDescription();
+            });
+            // Navigate to favorites page when clicking header favorite button
+            document.getElementById('favoriteBtn').addEventListener('click', function() {
+                window.location.href = 'favorites.html';
+            });
+            // Navigate to categories-home page when clicking header search button
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                window.location.href = 'categories-home.html';
+            });
+            
+            loadProductDetails();
+        });
+    </script>
+</body>
+</html>

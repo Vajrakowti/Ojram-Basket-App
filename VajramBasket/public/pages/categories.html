@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories - VajramBasket Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: flex-start;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header-logo img {
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .offcanvas-header.flex-column.align-items-start {
+            align-items: center !important;
+            justify-content: center;
+            padding-top: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .offcanvas-header img {
+            display: block;
+            margin: 0 auto;
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+        }
+        .offcanvas-body {
+            padding-top: 24px;
+        }
+        .offcanvas .nav-link {
+            font-size: 1.1rem;
+            padding: 12px 0;
+            color: #333;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .offcanvas .nav-link:hover, .offcanvas .nav-link.active {
+            background: #f3f3fa;
+            color: #6c63ff;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom {
+                padding: 0.5rem 0.5rem;
+            }
+            .header-logo img {
+                height: 48px;
+                width: auto;
+            }
+        }
+        body {
+            background: linear-gradient(135deg, #f3f3fa 0%, #e9eafc 100%);
+            min-height: 100vh;
+        }
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: center;
+        }
+        .category-card {
+            width: 240px;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(108,99,255,0.10);
+            background: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 22px 14px 16px 14px;
+            position: relative;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .category-card:hover {
+            box-shadow: 0 8px 32px rgba(108,99,255,0.18);
+            transform: translateY(-4px) scale(1.03);
+        }
+        .category-card img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            background: linear-gradient(135deg, #e9eafc 0%, #f3f3fa 100%);
+            box-shadow: 0 2px 12px rgba(108,99,255,0.08);
+            border: 3px solid #f3f3fa;
+        }
+        .category-card .category-name {
+            font-weight: 700;
+            font-size: 1.15rem;
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .category-card .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border: none;
+            color: #e53935;
+            font-size: 1.2rem;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(229,57,53,0.08);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+        .category-card .delete-btn:hover {
+            background: #ffeaea;
+            color: #b71c1c;
+        }
+        .add-category-btn {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 2000;
+            background: linear-gradient(90deg, #6c63ff 0%, #48c6ef 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            box-shadow: 0 4px 24px rgba(108,99,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .add-category-btn:hover {
+            background: linear-gradient(90deg, #48c6ef 0%, #6c63ff 100%);
+            box-shadow: 0 8px 32px rgba(108,99,255,0.22);
+        }
+        .modal-dialog {
+            display: flex;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .category-form-card {
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 22px;
+            box-shadow: 0 4px 32px rgba(108,99,255,0.10);
+            border: none;
+            background: #fff;
+        }
+        .category-form-card .card-header {
+            background: linear-gradient(90deg, #6c63ff 0%, #48c6ef 100%);
+            color: #fff;
+            border-radius: 22px 22px 0 0;
+            text-align: center;
+            padding-top: 1.2rem;
+            padding-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .category-form-card .card-header h4 {
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .category-form-card .btn-primary {
+            background: linear-gradient(90deg, #6c63ff 0%, #48c6ef 100%);
+            border: none;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(108,99,255,0.10);
+        }
+        .category-form-card .form-label {
+            font-weight: 500;
+            color: #6c63ff;
+        }
+        .category-form-card .form-control {
+            border-radius: 12px;
+            border: 1.5px solid #e0e0e0;
+            font-size: 1rem;
+            padding: 0.6rem 1rem;
+            margin-bottom: 8px;
+            box-shadow: none;
+            transition: border 0.2s;
+        }
+        .category-form-card .form-control:focus {
+            border: 1.5px solid #6c63ff;
+            box-shadow: 0 2px 8px rgba(108,99,255,0.08);
+        }
+        .category-form-card .mt-2 {
+            margin-top: 0.75rem !important;
+        }
+        .category-form-card .card-body {
+            padding: 2rem 2rem 1.5rem 2rem;
+        }
+        .category-form-card form {
+            margin-top: 0.5rem;
+        }
+        .category-form-card .form-label {
+            margin-bottom: 0.5rem;
+        }
+        .category-form-card .form-control {
+            margin-bottom: 1.25rem;
+        }
+        .category-form-card .btn-primary {
+            margin-top: 0.5rem;
+            padding: 0.7rem 0;
+            font-size: 1.1rem;
+        }
+        @media (max-width: 600px) {
+            .category-card {
+                width: 100%;
+                min-width: 0;
+            }
+            .add-category-btn {
+                bottom: 16px;
+                right: 16px;
+                width: 48px;
+                height: 48px;
+                font-size: 1.5rem;
+            }
+            .category-form-card {
+                max-width: 98vw;
+                border-radius: 14px;
+            }
+            .modal-dialog {
+                min-height: 100vh;
+                margin: 0;
+            }
+            .category-form-card .card-body {
+                padding: 1.2rem 0.7rem 1rem 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Back Button (no side nav, no home icon) -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" onclick="window.location.href='admin.html'" title="Back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-logo">
+                <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            </div>
+        </div>
+        <div class="header-right"></div>
+    </nav>
+    
+    <div class="container">
+        <div class="mb-4 mt-4">
+            <h4 class="text-center mb-3">All Categories</h4>
+            <div class="category-list" id="categoryList"></div>
+        </div>
+    </div>
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content category-form-card">
+          <div class="card-header bg-white border-0 pb-0">
+            <h4 class="mb-0">Add Categories</h4>
+          </div>
+          <div class="card-body">
+            <form id="categoryForm" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="categoryImage" class="form-label">Image</label>
+                <input type="file" class="form-control" id="categoryImage" name="image" accept="image/*" required>
+              </div>
+              <div class="mb-3">
+                <label for="categoryName" class="form-label">Category Name</label>
+                <input type="text" class="form-control" id="categoryName" name="name" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Add</button>
+              <div id="categoryMsg" class="mt-2"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="add-category-btn" id="openAddCategoryModal" title="Add Category"><i class="fas fa-plus"></i></button>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Modal logic
+        const addCategoryModal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+        document.getElementById('openAddCategoryModal').onclick = () => addCategoryModal.show();
+
+        // Handle add category form
+        const categoryForm = document.getElementById('categoryForm');
+        const categoryImage = document.getElementById('categoryImage');
+        const categoryName = document.getElementById('categoryName');
+        const categoryMsg = document.getElementById('categoryMsg');
+        const categoryList = document.getElementById('categoryList');
+
+        categoryForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('image', categoryImage.files[0]);
+            formData.append('name', categoryName.value.trim());
+            try {
+                const res = await fetch('/api/admin/categories', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    categoryMsg.textContent = 'Category added successfully!';
+                    categoryMsg.className = 'text-success';
+                    categoryForm.reset();
+                    addCategoryModal.hide();
+                    loadCategories();
+                } else {
+                    categoryMsg.textContent = data.error || 'Error adding category.';
+                    categoryMsg.className = 'text-danger';
+                }
+            } catch (err) {
+                categoryMsg.textContent = 'Error adding category.';
+                categoryMsg.className = 'text-danger';
+            }
+        });
+
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/admin/categories');
+                const categories = await res.json();
+                categoryList.innerHTML = '';
+                if (categories.length === 0) {
+                    categoryList.innerHTML = '<div class="text-muted">No categories added yet.</div>';
+                } else {
+                    categories.forEach(cat => {
+                        const card = document.createElement('div');
+                        card.className = 'category-card';
+                        card.innerHTML = `
+                            <button class="delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                            <img src="${cat.image}" alt="${cat.name}">
+                            <div class="category-name">${cat.name}</div>
+                        `;
+                        // Delete handler
+                        card.querySelector('.delete-btn').onclick = async function(e) {
+                            e.stopPropagation(); // Prevent card click
+                            if (confirm('Are you sure you want to delete this category?')) {
+                                try {
+                                    const res = await fetch(`/api/admin/categories/${cat._id}`, { method: 'DELETE' });
+                                    const data = await res.json();
+                                    if (res.ok) {
+                                        // Remove the card from DOM without reload
+                                        card.remove();
+                                        alert('Category deleted successfully!');
+                                    } else {
+                                        alert((data.error || 'Error deleting category.') + (data.details ? ('\n' + data.details) : ''));
+                                    }
+                                } catch (err) {
+                                    alert('Error deleting category.');
+                                }
+                            }
+                        };
+                        card.onclick = () => {
+                            window.location.href = `products.html?category=${cat.name}`;
+                        };
+                        categoryList.appendChild(card);
+                    });
+                }
+            } catch (err) {
+                categoryList.innerHTML = '<div class="text-danger">Could not load categories.</div>';
+            }
+        }
+        loadCategories();
+    </script>
+</body>
+</html> 

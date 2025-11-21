@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - VajramBasket Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: flex-start;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header-logo img {
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom { padding: 0.5rem 0.5rem; }
+            .header-logo img { height: 48px; width: auto; }
+        }
+        body { background: #f8f9fa; }
+        .admin-main-content { padding-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <!-- Header with Back Button, no side nav, no home icon -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" onclick="window.location.href='admin.html'" title="Back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-logo">
+                <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            </div>
+        </div>
+        <div class="header-right"></div>
+    </nav>
+
+    <div class="container mt-4 admin-main-content">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="mb-0">Users</h5>
+            <span class="badge bg-primary" id="totalUsersBadge">Total: 0</span>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // UI only placeholder; replace fetch URL when API is ready
+            const users = [];
+            // Example stub render (kept empty for now)
+            const tbody = document.getElementById('usersTableBody');
+            const badge = document.getElementById('totalUsersBadge');
+            if (users.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="4" class="text-center text-muted">No users to display.</td>';
+                tbody.appendChild(tr);
+            }
+            badge.textContent = `Total: ${users.length}`;
+        });
+    </script>
+</body>
+</html>

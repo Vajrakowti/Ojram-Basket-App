@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basket - VajramBasket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #fff;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 64px;
+            padding-bottom: 200px;
+        }
+        
+        /* Delivery Location */
+        .delivery-section {
+            background: #fff;
+            padding: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .location-icon {
+            color: #4caf50;
+            font-size: 18px;
+        }
+        
+        .delivery-text {
+            flex: 1;
+        }
+        
+        .delivery-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .delivery-address {
+            font-size: 16px;
+            color: #222;
+            font-weight: 500;
+        }
+        
+        .dropdown-icon {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        
+        /* Cart Items */
+        .cart-items {
+            background: #fff;
+        }
+        
+        .cart-header {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-header-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+        }
+        
+        .cart-item {
+            display: flex;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 4px;
+        }
+        
+        .item-weight {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .item-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .current-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+        }
+        
+        .original-price {
+            font-size: 14px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        .savings-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #e8f5e8;
+            color: #4caf50;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            width: fit-content;
+        }
+        
+        .savings-tag i {
+            font-size: 10px;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #4caf50;
+            color: white;
+            border-radius: 8px;
+            padding: 8px;
+            min-width: 100px;
+            justify-content: center;
+        }
+        
+        .quantity-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .quantity-display {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        /* Bottom Summary */
+        .bottom-summary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 16px;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .total-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .total-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #222;
+        }
+        
+        .add-address-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        
+        .add-address-btn:hover {
+            background: #45a049;
+        }
+        
+        /* Empty cart state */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-cart i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+        
+        .empty-cart h3 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .empty-cart p {
+            margin-bottom: 24px;
+        }
+        
+        .shop-now-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Address Modal Styles */
+        .address-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .address-modal-content {
+            background: white;
+            width: 100%;
+            max-height: 80vh;
+            border-radius: 20px 20px 0 0;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .address-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 20px 10px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .address-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .address-form {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #4caf50;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4caf50;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+
+        .use-address-btn {
+            width: 100%;
+            background: #ffd700;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .use-address-btn:hover {
+            background: #ffed4e;
+        }
+
+        .add-address-prompt {
+            background: #fff;
+            padding: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .add-address-prompt i {
+            color: #4caf50;
+            font-size: 18px;
+        }
+
+        .add-address-text {
+            flex: 1;
+        }
+
+        .add-address-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .add-address-subtitle {
+            font-size: 16px;
+            color: #222;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 8px 12px;
+            }
+            
+            .main-content {
+                margin-top: 56px;
+            }
+            
+            .cart-item {
+                padding: 12px;
+            }
+            
+            .item-image {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .item-name {
+                font-size: 15px;
+            }
+            
+            .current-price {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.history.back()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="header-title">Basket</div>
+        </div>
+        <div class="header-right">
+            <button class="header-icon">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="header-icon">
+                <i class="fas fa-share"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Delivery Location -->
+        <div class="delivery-section" id="deliverySection" onclick="openAddressModal()" style="cursor: pointer;">
+            <i class="fas fa-map-marker-alt location-icon"></i>
+            <div class="delivery-text">
+                <div class="delivery-title">Deliver to Selected Location</div>
+                <div class="delivery-address" id="deliveryAddress">Loading address...</div>
+            </div>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+        </div>
+
+        <!-- Add Address Prompt -->
+        <div class="add-address-prompt" id="addAddressPrompt" style="display: none;" onclick="openAddressModal()">
+            <i class="fas fa-plus"></i>
+            <div class="add-address-text">
+                <div class="add-address-title">Add delivery address</div>
+                <div class="add-address-subtitle">Tap to add your address</div>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </div>
+
+
+        <!-- Cart Items -->
+        <div class="cart-items" id="cartItems">
+            <div class="cart-header" id="cartHeader" style="display: none;">
+                <div class="cart-header-text">Your Items</div>
+                <div class="product-count" id="productCount">0 Products</div>
+            </div>
+            <!-- Cart items will be loaded here -->
+        </div>
+
+        <!-- Empty cart state -->
+        <div class="empty-cart" id="emptyCart" style="display: none;">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>Your cart is empty</h3>
+            <p>Add some items to get started</p>
+            <a href="categories-home.html" class="shop-now-btn">Shop Now</a>
+        </div>
+    </div>
+
+    <!-- Address Form Modal -->
+    <div class="address-modal" id="addressModal" style="display: none;">
+        <div class="address-modal-content">
+            <div class="address-modal-header">
+                <h3>Add Address</h3>
+                <button class="close-btn" onclick="closeAddressModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="address-form">
+                <div class="form-group">
+                    <label>Flat, House no., Building, Company, Apartment</label>
+                    <input type="text" id="flatHouse" placeholder="Adapala street">
+                </div>
+                <div class="form-group">
+                    <label>Area, Street, Sector, Village</label>
+                    <input type="text" id="areaStreet" placeholder="Adapala street, kadiri">
+                </div>
+                <div class="form-group">
+                    <label>Landmark</label>
+                    <input type="text" id="landmark" placeholder="Near YSR park">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Pincode</label>
+                        <input type="text" id="pincode" placeholder="515591">
+                    </div>
+                    <div class="form-group">
+                        <label>Town/City</label>
+                        <input type="text" id="townCity" placeholder="KADIRI">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <select id="state">
+                        <option value="ANDHRA PRADESH">ANDHRA PRADESH</option>
+                        <option value="ARUNACHAL PRADESH">ARUNACHAL PRADESH</option>
+                        <option value="ASSAM">ASSAM</option>
+                        <option value="BIHAR">BIHAR</option>
+                        <option value="CHHATTISGARH">CHHATTISGARH</option>
+                        <option value="GOA">GOA</option>
+                        <option value="GUJARAT">GUJARAT</option>
+                        <option value="HARYANA">HARYANA</option>
+                        <option value="HIMACHAL PRADESH">HIMACHAL PRADESH</option>
+                        <option value="JHARKHAND">JHARKHAND</option>
+                        <option value="KARNATAKA">KARNATAKA</option>
+                        <option value="KERALA">KERALA</option>
+                        <option value="MADHYA PRADESH">MADHYA PRADESH</option>
+                        <option value="MAHARASHTRA">MAHARASHTRA</option>
+                        <option value="MANIPUR">MANIPUR</option>
+                        <option value="MEGHALAYA">MEGHALAYA</option>
+                        <option value="MIZORAM">MIZORAM</option>
+                        <option value="NAGALAND">NAGALAND</option>
+                        <option value="ODISHA">ODISHA</option>
+                        <option value="PUNJAB">PUNJAB</option>
+                        <option value="RAJASTHAN">RAJASTHAN</option>
+                        <option value="SIKKIM">SIKKIM</option>
+                        <option value="TAMIL NADU">TAMIL NADU</option>
+                        <option value="TELANGANA">TELANGANA</option>
+                        <option value="TRIPURA">TRIPURA</option>
+                        <option value="UTTAR PRADESH">UTTAR PRADESH</option>
+                        <option value="UTTARAKHAND">UTTARAKHAND</option>
+                        <option value="WEST BENGAL">WEST BENGAL</option>
+                        <option value="DELHI">DELHI</option>
+                        <option value="JAMMU AND KASHMIR">JAMMU AND KASHMIR</option>
+                        <option value="LADAKH">LADAKH</option>
+                        <option value="PUDUCHERRY">PUDUCHERRY</option>
+                        <option value="CHANDIGARH">CHANDIGARH</option>
+                        <option value="DADRA AND NAGAR HAVELI AND DAMAN AND DIU">DADRA AND NAGAR HAVELI AND DAMAN AND DIU</option>
+                        <option value="LAKSHADWEEP">LAKSHADWEEP</option>
+                        <option value="ANDAMAN AND NICOBAR ISLANDS">ANDAMAN AND NICOBAR ISLANDS</option>
+                    </select>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="defaultAddress" checked>
+                    <label for="defaultAddress">Make this my default address</label>
+                </div>
+                <button class="use-address-btn" onclick="saveAddress()">Use this address</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="bottom-summary" id="bottomSummary" style="display: none;">
+        <div class="summary-row">
+            <div class="total-section">
+                <div class="total-text">Total: ₹<span id="totalPrice">0.00</span></div>
+            </div>
+            <button class="add-address-btn" id="bottomButton" onclick="proceedToCheckout()">Add Address</button>
+        </div>
+    </div>
+
+    <script>
+        let cartItems = [];
+        let cartMap = {};
+        let userAddress = null;
+
+        // Load cart items
+        async function loadCartItems() {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) {
+                    console.log('No user DB name found for cart, redirecting to login');
+                    alert('Please login to access your cart');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                const res = await fetch('/api/home/cart', {
+                    headers: { 'x-user-db': userDbName }
+                });
+                
+                if (!res.ok) {
+                    showEmptyCart();
+                    return;
+                }
+                
+                cartItems = await res.json();
+                cartMap = {};
+                cartItems.forEach(item => {
+                    cartMap[item.productId] = item.quantity;
+                });
+                
+                displayCartItems();
+                updateSummary();
+            } catch (err) {
+                console.error('Error loading cart:', err);
+                showEmptyCart();
+            }
+        }
+
+        // Display cart items
+        function displayCartItems() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartHeader = document.getElementById('cartHeader');
+            const emptyCart = document.getElementById('emptyCart');
+            const bottomSummary = document.getElementById('bottomSummary');
+            
+            if (cartItems.length === 0) {
+                showEmptyCart();
+                return;
+            }
+            
+            // Clear existing items but keep header
+            const existingItems = cartItemsContainer.querySelectorAll('.cart-item');
+            existingItems.forEach(item => item.remove());
+            
+            emptyCart.style.display = 'none';
+            cartHeader.style.display = 'flex';
+            bottomSummary.style.display = 'block';
+            
+            cartItems.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                
+                // Calculate prices
+                const mrp = parseFloat(item.mrp || item.price);
+                const currentPrice = parseFloat(item.price);
+                const discount = mrp > currentPrice ? Math.round((mrp - currentPrice) / mrp * 100) : 0;
+                
+                cartItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-weight">${item.weight ? `${item.weight}${item.weightUnit}` : '1 piece'}</div>
+                        <div class="item-price-row">
+                            <span class="current-price">₹${currentPrice}</span>
+                            ${mrp > currentPrice ? `<span class="original-price">₹${mrp}</span>` : ''}
+                        </div>
+                        ${discount > 0 ? `
+                            <div class="savings-tag">
+                                <i class="fas fa-check"></i>
+                                <span>Har Din Sasta!</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn cart-decrease-btn" data-product-id="${item.productId}">-</button>
+                        <span class="quantity-display cart-quantity">${item.quantity}</span>
+                        <button class="quantity-btn cart-increase-btn" data-product-id="${item.productId}">+</button>
+                    </div>
+                `;
+                
+                cartItemsContainer.appendChild(cartItem);
+            });
+            
+            // Update product count
+            document.getElementById('productCount').textContent = `${cartItems.length} Product${cartItems.length !== 1 ? 's' : ''}`;
+        }
+
+        // Show empty cart state
+        function showEmptyCart() {
+            document.getElementById('cartItems').innerHTML = `
+                <div class="cart-header" id="cartHeader" style="display: none;">
+                    <div class="cart-header-text">Your Items</div>
+                    <div class="product-count" id="productCount">0 Products</div>
+                </div>
+            `;
+            document.getElementById('emptyCart').style.display = 'block';
+            document.getElementById('bottomSummary').style.display = 'none';
+            document.getElementById('productCount').textContent = '0 Products';
+        }
+
+        // Update summary
+        function updateSummary() {
+            let totalPrice = 0;
+            
+            cartItems.forEach(item => {
+                const currentPrice = parseFloat(item.price);
+                const quantity = item.quantity || 1;
+                
+                totalPrice += currentPrice * quantity;
+            });
+            
+            document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+        }
+
+        // Update cart quantity
+        async function updateCartQuantity(productId, newQuantity) {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) {
+                    alert('Please login to update cart');
+                    return;
+                }
+                
+                // Update local state first
+                if (newQuantity === 0) {
+                    delete cartMap[productId];
+                    cartItems = cartItems.filter(item => item.productId !== productId);
+                } else {
+                    cartMap[productId] = newQuantity;
+                    const item = cartItems.find(item => item.productId === productId);
+                    if (item) {
+                        item.quantity = newQuantity;
+                    }
+                }
+                
+                const res = await fetch(`/api/home/cart/${productId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName 
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                });
+                
+                if (res.ok) {
+                    displayCartItems();
+                    updateSummary();
+                    // Notify other tabs about cart update
+                    localStorage.setItem('cartUpdated', Date.now().toString());
+                } else {
+                    const error = await res.json();
+                    console.error('Failed to update cart:', error);
+                    // Revert local state on error
+                    loadCartItems();
+                    alert('Failed to update cart: ' + (error.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error updating cart:', err);
+                // Revert local state on error
+                loadCartItems();
+                alert('Error updating cart');
+            }
+        }
+
+        // Event delegation for quantity buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('cart-decrease-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const currentQuantity = cartMap[productId] || 0;
+                if (currentQuantity > 0) {
+                    updateCartQuantity(productId, currentQuantity - 1);
+                }
+                return false;
+            } else if (e.target.classList.contains('cart-increase-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const currentQuantity = cartMap[productId] || 0;
+                updateCartQuantity(productId, currentQuantity + 1);
+                return false;
+            }
+        });
+
+        // Proceed to checkout
+        function proceedToCheckout() {
+            if (cartItems.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+            // This function is now handled by the bottom button which changes based on address state
+            openAddressModal();
+        }
+
+        // Listen for storage changes to sync cart between tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cartUpdated') {
+                console.log('Cart updated in another tab, refreshing...');
+                loadCartItems();
+            }
+        });
+
+        // Refresh cart data when page becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                loadCartItems();
+            }
+        });
+
+        // Load user address
+        async function loadUserAddress() {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                console.log('Loading address for user:', userDbName);
+                
+                if (!userDbName) {
+                    console.log('No user DB name found, redirecting to login');
+                    alert('Please login to access your cart and address');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                console.log('Fetching profile from API...');
+                const res = await fetch('/api/home/profile', {
+                    headers: { 'x-user-db': userDbName }
+                });
+                
+                console.log('Profile API response status:', res.status);
+                
+                if (!res.ok) {
+                    console.log('Profile API failed, showing add address prompt');
+                    showAddAddressPrompt();
+                    return;
+                }
+                
+                const profile = await res.json();
+                console.log('Profile loaded:', profile);
+                userAddress = profile.address;
+                
+                if (userAddress) {
+                    console.log('Address found, displaying:', userAddress);
+                    displayUserAddress();
+                } else {
+                    console.log('No address found, showing add address prompt');
+                    showAddAddressPrompt();
+                }
+            } catch (err) {
+                console.error('Error loading address:', err);
+                showAddAddressPrompt();
+            }
+        }
+
+        // Display user address
+        function displayUserAddress() {
+            if (!userAddress) return;
+            
+            const addressParts = [
+                userAddress.flatHouse,
+                userAddress.areaStreet,
+                userAddress.landmark,
+                userAddress.townCity,
+                userAddress.state,
+                userAddress.pincode
+            ].filter(part => part && part.trim());
+            
+            const formattedAddress = addressParts.join(', ');
+            
+            document.getElementById('deliveryAddress').textContent = formattedAddress;
+            document.getElementById('deliverySection').style.display = 'flex';
+            document.getElementById('addAddressPrompt').style.display = 'none';
+            
+            // Update bottom button to payment mode
+            document.getElementById('bottomButton').textContent = 'Select Payment Mode';
+            document.getElementById('bottomButton').onclick = selectPaymentMode;
+        }
+
+        // Show add address prompt
+        function showAddAddressPrompt() {
+            document.getElementById('deliverySection').style.display = 'none';
+            document.getElementById('addAddressPrompt').style.display = 'flex';
+            
+            // Update bottom button to add address
+            document.getElementById('bottomButton').textContent = 'Add Address';
+            document.getElementById('bottomButton').onclick = openAddressModal;
+        }
+
+        // Open address modal
+        function openAddressModal() {
+            document.getElementById('addressModal').style.display = 'flex';
+            
+            // Pre-fill form if editing existing address
+            if (userAddress) {
+                document.getElementById('flatHouse').value = userAddress.flatHouse || '';
+                document.getElementById('areaStreet').value = userAddress.areaStreet || '';
+                document.getElementById('landmark').value = userAddress.landmark || '';
+                document.getElementById('pincode').value = userAddress.pincode || '';
+                document.getElementById('townCity').value = userAddress.townCity || '';
+                document.getElementById('state').value = userAddress.state || 'ANDHRA PRADESH';
+                document.getElementById('defaultAddress').checked = userAddress.isDefault || false;
+            }
+        }
+
+        // Close address modal
+        function closeAddressModal() {
+            document.getElementById('addressModal').style.display = 'none';
+        }
+
+        // Save address
+        async function saveAddress() {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                console.log('User DB Name:', userDbName);
+                
+                if (!userDbName) {
+                    alert('Please login to save address');
+                    return;
+                }
+                
+                const addressData = {
+                    flatHouse: document.getElementById('flatHouse').value.trim(),
+                    areaStreet: document.getElementById('areaStreet').value.trim(),
+                    landmark: document.getElementById('landmark').value.trim(),
+                    pincode: document.getElementById('pincode').value.trim(),
+                    townCity: document.getElementById('townCity').value.trim(),
+                    state: document.getElementById('state').value,
+                    isDefault: document.getElementById('defaultAddress').checked
+                };
+                
+                console.log('Address data to save:', addressData);
+                
+                // Validate required fields
+                if (!addressData.flatHouse || !addressData.areaStreet || !addressData.pincode || !addressData.townCity) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                console.log('Making API call to save address...');
+                const res = await fetch('/api/home/profile/address', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName 
+                    },
+                    body: JSON.stringify(addressData)
+                });
+                
+                console.log('API response status:', res.status);
+                console.log('API response headers:', res.headers);
+                
+                // Check if response is HTML (error page)
+                const contentType = res.headers.get('content-type');
+                console.log('Response content type:', contentType);
+                
+                if (contentType && contentType.includes('text/html')) {
+                    const htmlText = await res.text();
+                    console.error('Received HTML instead of JSON:', htmlText.substring(0, 200));
+                    alert('Server error: Received HTML page instead of JSON response. Please check server logs.');
+                    return;
+                }
+                
+                if (res.ok) {
+                    const savedProfile = await res.json();
+                    console.log('Address saved successfully:', savedProfile);
+                    userAddress = savedProfile.address;
+                    closeAddressModal();
+                    displayUserAddress();
+                } else {
+                    try {
+                        const error = await res.json();
+                        console.error('API error response:', error);
+                        alert('Failed to save address: ' + (error.error || 'Unknown error'));
+                    } catch (jsonErr) {
+                        const errorText = await res.text();
+                        console.error('Failed to parse error response:', errorText);
+                        alert('Failed to save address: ' + errorText);
+                    }
+                }
+            } catch (err) {
+                console.error('Error saving address:', err);
+                alert('Error saving address: ' + err.message);
+            }
+        }
+
+        // Select payment mode (placeholder)
+        function selectPaymentMode() {
+            alert('Payment mode selection will be implemented');
+        }
+
+        // Clear profile data for testing
+        window.clearProfileData = async function() {
+            const userDbName = localStorage.getItem('userDbName');
+            console.log('Clearing profile data for user:', userDbName);
+            
+            try {
+                const res = await fetch('/api/home/profile/clear', {
+                    method: 'DELETE',
+                    headers: { 'x-user-db': userDbName }
+                });
+                
+                if (res.ok) {
+                    console.log('Profile data cleared successfully');
+                    alert('Profile data cleared successfully');
+                } else {
+                    console.error('Failed to clear profile data');
+                    alert('Failed to clear profile data');
+                }
+            } catch (err) {
+                console.error('Error clearing profile data:', err);
+                alert('Error clearing profile data');
+            }
+        };
+
+        // Fix profile userId format
+        window.fixProfileFormat = async function() {
+            const userDbName = localStorage.getItem('userDbName');
+            console.log('Fixing profile format for user:', userDbName);
+            
+            try {
+                const res = await fetch('/api/home/profile/fix', {
+                    method: 'POST',
+                    headers: { 'x-user-db': userDbName }
+                });
+                
+                if (res.ok) {
+                    const result = await res.json();
+                    console.log('Profile format fixed:', result);
+                    alert('Profile format fixed! Fixed ' + result.fixedCount + ' profiles.');
+                } else {
+                    const error = await res.json();
+                    console.error('Failed to fix profile format:', error);
+                    alert('Failed to fix profile format: ' + error.error);
+                }
+            } catch (err) {
+                console.error('Error fixing profile format:', err);
+                alert('Error fixing profile format: ' + err.message);
+            }
+        };
+
+        // Merge duplicate profiles
+        window.mergeProfiles = async function() {
+            const userDbName = localStorage.getItem('userDbName');
+            console.log('Merging profiles for user:', userDbName);
+            
+            try {
+                const res = await fetch('/api/home/profile/merge', {
+                    method: 'POST',
+                    headers: { 'x-user-db': userDbName }
+                });
+                
+                if (res.ok) {
+                    const result = await res.json();
+                    console.log('Profiles merged successfully:', result);
+                    alert('Profiles merged successfully!');
+                    // Reload the page to see updated data
+                    location.reload();
+                } else {
+                    const error = await res.json();
+                    console.error('Failed to merge profiles:', error);
+                    alert('Failed to merge profiles: ' + error.error);
+                }
+            } catch (err) {
+                console.error('Error merging profiles:', err);
+                alert('Error merging profiles: ' + err.message);
+            }
+        };
+
+        // Test function for debugging API calls
+        window.testAddressAPI = async function() {
+            const userDbName = localStorage.getItem('userDbName');
+            console.log('Testing address API with userDbName:', userDbName);
+            
+            try {
+                // Test basic connectivity
+                console.log('Testing basic connectivity...');
+                const testRes = await fetch('/api/home/profile/test');
+                console.log('Test endpoint status:', testRes.status);
+                const testData = await testRes.json();
+                console.log('Test endpoint response:', testData);
+                
+                // Test debug endpoint
+                console.log('Testing debug endpoint...');
+                const debugRes = await fetch('/api/home/profile/debug', {
+                    headers: { 'x-user-db': userDbName }
+                });
+                console.log('Debug endpoint status:', debugRes.status);
+                const debugData = await debugRes.json();
+                console.log('Debug data:', debugData);
+                
+                // Test profile fetch
+                console.log('Testing profile fetch...');
+                const profileRes = await fetch('/api/home/profile', {
+                    headers: { 'x-user-db': userDbName }
+                });
+                console.log('Profile fetch status:', profileRes.status);
+                console.log('Profile fetch content type:', profileRes.headers.get('content-type'));
+                
+                if (profileRes.headers.get('content-type')?.includes('text/html')) {
+                    const htmlText = await profileRes.text();
+                    console.error('Profile fetch returned HTML:', htmlText.substring(0, 200));
+                    return;
+                }
+                
+                const profile = await profileRes.json();
+                console.log('Profile data:', profile);
+                
+                // Test address save
+                console.log('Testing address save...');
+                const testAddress = {
+                    flatHouse: 'Test House',
+                    areaStreet: 'Test Street',
+                    landmark: 'Test Landmark',
+                    pincode: '123456',
+                    townCity: 'Test City',
+                    state: 'ANDHRA PRADESH',
+                    isDefault: true
+                };
+                
+                const addressRes = await fetch('/api/home/profile/address', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName 
+                    },
+                    body: JSON.stringify(testAddress)
+                });
+                console.log('Address save status:', addressRes.status);
+                console.log('Address save content type:', addressRes.headers.get('content-type'));
+                
+                if (addressRes.headers.get('content-type')?.includes('text/html')) {
+                    const htmlText = await addressRes.text();
+                    console.error('Address save returned HTML:', htmlText.substring(0, 200));
+                    return;
+                }
+                
+                const savedProfile = await addressRes.json();
+                console.log('Saved profile:', savedProfile);
+                
+                // Test debug endpoint again to see if address was saved
+                console.log('Testing debug endpoint after save...');
+                const debugRes2 = await fetch('/api/home/profile/debug', {
+                    headers: { 'x-user-db': userDbName }
+                });
+                const debugData2 = await debugRes2.json();
+                console.log('Debug data after save:', debugData2);
+                
+            } catch (err) {
+                console.error('Test failed:', err);
+            }
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // For development/testing - set a test userDbName if none exists
+            if (!localStorage.getItem('userDbName')) {
+                console.log('No userDbName found, setting test user for development');
+                localStorage.setItem('userDbName', 'testuser_' + Date.now());
+            }
+            
+            loadCartItems();
+            loadUserAddress();
+        });
+    </script>
+</body>
+</html>

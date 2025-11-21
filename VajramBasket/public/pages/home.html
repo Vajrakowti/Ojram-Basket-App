@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VajramBasket - Online Grocery Shopping</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .header-logo {
+            display: flex;
+            flex: 1;
+        }
+        .header-logo img {
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: flex-start;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .header-icon.fav {
+            color: #e53935;
+        }
+        .navbar-toggler {
+            border: none;
+        }
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 8px;
+        }
+        .carousel-container {
+            margin-bottom: 24px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .banner-aspect {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 16/9;
+            background: #fff;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-inner img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            border-radius: 32px;
+            background: #fff;
+            transition: object-fit 0.2s;
+        }
+        .carousel-indicators {
+            position: static;
+            margin-top: 12px;
+            margin-bottom: 0;
+        }
+        .carousel-indicators [data-bs-target] {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #bbb;
+            border: none;
+            margin: 0 4px;
+            opacity: 0.7;
+            transition: background 0.2s, opacity 0.2s;
+        }
+        .carousel-indicators .active {
+            background-color: #6c63ff;
+            opacity: 1;
+        }
+        .featured-categories .card {
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        @media (max-width: 1200px) {
+            .main-content {
+                max-width: 1000px;
+            }
+            .banner-aspect {
+                max-width: 900px;
+            }
+        }
+        @media (max-width: 992px) {
+            .main-content {
+                max-width: 95vw;
+            }
+            .banner-aspect {
+                max-width: 98vw;
+                aspect-ratio: 16/8;
+            }
+        }
+        @media (max-width: 768px) {
+            .header-logo span {
+                font-size: 1.2rem;
+            }
+            .main-content {
+                max-width: 100vw;
+                padding: 0 4px;
+            }
+            .banner-aspect {
+                max-width: 100vw;
+                aspect-ratio: 16/10;
+                border-radius: 16px;
+            }
+            .carousel-inner img {
+                border-radius: 16px;
+            }
+            .carousel-indicators [data-bs-target] {
+                width: 8px;
+                height: 8px;
+            }
+            .featured-categories .card {
+                min-height: 120px;
+            }
+            .navbar-custom {
+                padding: 0.5rem 0.5rem;
+            }
+            .header-logo img {
+                height: 48px;
+                width: auto;
+            }
+        }
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1050;
+            background: #fff;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+            border-top: 1px solid #eee;
+            width: 100vw;
+            max-width: 100vw;
+        }
+        .bottom-nav-item {
+            flex: 1;
+            text-align: center;
+            color: #444;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0 0 0;
+            transition: color 0.2s;
+        }
+        .bottom-nav-item.active,
+        .bottom-nav-item:active,
+        .bottom-nav-item:focus {
+            color: #6c63ff;
+        }
+        .bottom-nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+        }
+        @media (min-width: 992px) {
+            .bottom-nav {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100vw;
+                max-width: 100vw;
+                border-radius: 0;
+                margin: 0;
+                box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+            }
+        }
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 60px;
+            }
+        }
+        .offcanvas-header.flex-column.align-items-start, .offcanvas-header.flex-column.align-items-center {
+            align-items: center !important;
+            justify-content: center;
+            padding-top: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .offcanvas-header img {
+            display: block;
+            margin: 0 auto;
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+        }
+        .offcanvas-body {
+            padding-top: 24px;
+        }
+        .offcanvas .nav-link {
+            font-size: 1.1rem;
+            padding: 12px 0;
+            color: #333;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .offcanvas .nav-link:hover, .offcanvas .nav-link.active {
+            background: #f3f3fa;
+            color: #6c63ff;
+        }
+
+        /* New styles for Featured Categories */
+        .featured-categories {
+            padding: 2rem 0;
+            background: #f8f9fa;
+        }
+        .section-title {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+        .category-grid-card {
+            background: #fff;
+            border-radius: 22px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .category-grid-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .category-grid-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .category-grid-card .card-body {
+            padding: 1rem;
+            text-align: center;
+        }
+        .category-grid-card .card-title {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#sideNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-logo">
+                <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="header-icon fav" type="button" id="goFavorites">
+                <i class="fas fa-heart"></i>
+            </button>
+            <button class="header-icon" type="button" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+        </div>
+    </nav>
+    <!-- Side Navigation (Offcanvas) -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sideNav">
+        <div class="offcanvas-header flex-column align-items-center">
+            <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-home me-2"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="categories-home.html"><i class="fas fa-th-large me-2"></i>Categories</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-tags me-2"></i>Offers</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-box me-2"></i>Orders</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- Carousel Placeholder -->
+    <div class="main-content">
+        <div class="carousel-container">
+            <div class="banner-aspect">
+                <div id="bannerCarousel" class="carousel slide w-100 h-100" data-bs-ride="carousel" data-bs-interval="3000">
+                    <div class="carousel-inner h-100" id="carouselImages">
+                        <!-- Banner images will be loaded here -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center" style="margin-top: 10px; margin-bottom: 10px;">
+            <div class="carousel-indicators" id="carouselIndicators"></div>
+        </div>
+
+        <!-- Featured Categories - Updated -->
+        <section class="featured-categories">
+            <div class="container-fluid">
+                <h2 class="section-title">Featured Categories</h2>
+                <div class="row g-4" id="featuredCategoriesGrid">
+                    <!-- Categories will be loaded here dynamically -->
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="categories-home.html" class="bottom-nav-item">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="cart.html" class="bottom-nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <i class="fas fa-box"></i>
+            <span>Orders</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JavaScript code -->
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Add to cart functionality
+            const addToCartButtons = document.querySelectorAll('.btn-primary');
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productCard = this.closest('.product-card');
+                    const productName = productCard.querySelector('.card-title').textContent;
+                    const productPrice = productCard.querySelector('.price').textContent;
+                    
+                    // Show success message
+                    const toast = document.createElement('div');
+                    toast.className = 'toast position-fixed bottom-0 end-0 m-3';
+                    toast.setAttribute('role', 'alert');
+                    toast.innerHTML = `
+                        <div class="toast-header">
+                            <strong class="me-auto">Success!</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                        </div>
+                        <div class="toast-body">
+                            ${productName} added to cart
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
+
+                    // Remove toast after it's hidden
+                    toast.addEventListener('hidden.bs.toast', function () {
+                        toast.remove();
+                    });
+                });
+            });
+
+            // Mobile menu toggle
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            
+            if (navbarToggler && navbarCollapse) {
+                navbarToggler.addEventListener('click', function() {
+                    navbarCollapse.classList.toggle('show');
+                });
+            }
+        });
+
+        // Banner carousel logic
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/home/banners')
+                .then(res => res.json())
+                .then(data => {
+                    const carouselImages = document.getElementById('carouselImages');
+                    const carouselIndicators = document.getElementById('carouselIndicators');
+                    carouselImages.innerHTML = '';
+                    carouselIndicators.innerHTML = '';
+                    if (data.banners.length === 0) {
+                        carouselImages.innerHTML = '<div class="carousel-item active"><img src="https://via.placeholder.com/1200x400" class="d-block w-100" alt="No banners"></div>';
+                    } else {
+                        data.banners.forEach((banner, idx) => {
+                            // Carousel item
+                            const div = document.createElement('div');
+                            div.className = 'carousel-item' + (idx === 0 ? ' active' : '');
+                            div.innerHTML = `<img src="${banner.path}" class="d-block w-100" alt="Banner">`;
+                            carouselImages.appendChild(div);
+                            // Indicator below
+                            const indicator = document.createElement('button');
+                            indicator.type = 'button';
+                            indicator.setAttribute('data-bs-target', '#bannerCarousel');
+                            indicator.setAttribute('data-bs-slide-to', idx);
+                            if (idx === 0) indicator.className = 'active';
+                            indicator.setAttribute('aria-label', `Slide ${idx+1}`);
+                            carouselIndicators.appendChild(indicator);
+                        });
+                    }
+                });
+            // Sync indicator active state with carousel
+            var bannerCarousel = document.getElementById('bannerCarousel');
+            bannerCarousel.addEventListener('slid.bs.carousel', function (event) {
+                var indicators = document.querySelectorAll('#carouselIndicators button');
+                indicators.forEach(btn => btn.classList.remove('active'));
+                if (indicators[event.to]) indicators[event.to].classList.add('active');
+            });
+
+            // Fetch and render featured categories
+            fetch('/api/home/categories')
+                .then(res => res.json())
+                .then(categories => {
+                    const grid = document.getElementById('featuredCategoriesGrid');
+                    grid.innerHTML = '';
+                    categories.forEach(cat => {
+                        const col = document.createElement('div');
+                        col.className = 'col-4 col-md-4 col-lg-2';
+                        col.innerHTML = `
+                            <a href="products-home.html?category=${encodeURIComponent(cat.name)}" class="category-grid-card">
+                                <img src="${cat.image}" class="card-img-top" alt="${cat.name}">
+                                <div class="card-body">
+                                    <h5 class="card-title">${cat.name}</h5>
+                                </div>
+                            </a>
+                        `;
+                        grid.appendChild(col);
+                    });
+                });
+        });
+
+        let favoriteMap = {};
+        async function fetchFavorites() {
+            const res = await fetch('/api/home/favorites');
+            const favs = await res.json();
+            favoriteMap = {};
+            favs.forEach(f => favoriteMap[f.productId] = f._id);
+        }
+
+        // Patch product card rendering to use favoriteMap
+        function renderProductCards() {
+            // ... your logic to render product cards ...
+            // For each card, set heart icon to filled if in favoriteMap
+            // Add click handler to toggle favorite
+        }
+
+        // Patch goFavorites button
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('goFavorites').onclick = function() {
+                window.location.href = 'favorites.html';
+            };
+        });
+    </script>
+</body>
+</html> 

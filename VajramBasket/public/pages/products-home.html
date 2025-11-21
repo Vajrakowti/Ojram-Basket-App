@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - VajramBasket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-logo img {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .header-icon.fav {
+            color: #e53935;
+        }
+        .search-bar-container {
+            background: #fff;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: center;
+            position: sticky;
+            top: 64px;
+            z-index: 99;
+        }
+        .search-bar {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px;
+            border: 1px solid #ddd;
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .search-bar:focus {
+            border: 1.5px solid #6c63ff;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: #ffffff;
+            border-radius: 22px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            padding: 12px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.3s;
+        }
+        .product-card:hover {
+            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        }
+        .product-image-container {
+            position: relative;
+            padding-bottom: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        .product-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        .favorite-btn i {
+            color: #e53935;
+            font-size: 1.2rem;
+        }
+        .product-info {
+            padding: 12px 0 0 0;
+        }
+        .product-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #222;
+        }
+        .product-weight {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .product-price {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .current-price {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #222;
+        }
+        .mrp {
+            color: #999;
+            text-decoration: line-through;
+            font-size: 0.9rem;
+        }
+        .discount {
+            color: #4caf50;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .add-btn {
+            background: #fff;
+            color: #4caf50;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 8px;
+            width: 100%;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            text-align: center;
+        }
+        .add-btn:hover {
+            background: #4caf50;
+            color: #fff;
+        }
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+                padding: 12px;
+            }
+            .product-name {
+                font-size: 1rem;
+            }
+            .current-price {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <!-- Logo removed -->
+        </div>
+        <div class="header-right">
+            <button class="header-icon fav" type="button" id="goFavorites">
+                <i class="fas fa-heart"></i>
+            </button>
+            <button class="header-icon" type="button" onclick="window.location.href='cart.html'">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-bar-container">
+        <input class="search-bar" type="text" id="productSearch" placeholder="Search products...">
+    </div>
+
+    <!-- Products Grid -->
+    <div class="container">
+        <h3 class="mt-4" id="categoryTitle"></h3>
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryName = urlParams.get('category');
+        document.getElementById('categoryTitle').textContent = categoryName || 'Products';
+        
+        let favoriteMap = {};
+        let cartMap = {};
+        
+        async function fetchFavorites() {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                const res = await fetch('/api/home/favorites', {
+                    headers: userDbName ? { 'x-user-db': userDbName } : {}
+                });
+                if (!res.ok) {
+                    favoriteMap = {};
+                    return;
+                }
+                const favs = await res.json();
+                favoriteMap = {};
+                favs.forEach(f => favoriteMap[f.productId] = true);
+            } catch (_) {
+                favoriteMap = {};
+            }
+        }
+
+        // Load cart items
+        async function loadCartItems() {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) return;
+                
+                const res = await fetch('/api/home/cart', {
+                    headers: { 'x-user-db': userDbName }
+                });
+                if (!res.ok) return;
+                
+                const cartItems = await res.json();
+                cartMap = {};
+                cartItems.forEach(item => {
+                    cartMap[item.productId] = item.quantity;
+                });
+                
+                updateCartButtons();
+            } catch (err) {
+                console.error('Error loading cart:', err);
+            }
+        }
+
+
+        async function loadProducts(filter = "") {
+            try {
+                await fetchFavorites();
+                await loadCartItems();
+                const res = await fetch(`/api/home/products/${encodeURIComponent(categoryName)}`);
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.details || error.error || 'Failed to fetch products');
+                }
+                const products = await res.json();
+                const grid = document.getElementById('productsGrid');
+                grid.innerHTML = '';
+                
+                let filtered = products;
+                if (filter) {
+                    filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+                }
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = '<div class="text-muted">No products found in this category yet.</div>';
+                    return;
+                }
+
+                filtered.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.style.cursor = 'pointer';
+                    
+                    // Calculate discount percentage
+                    const mrp = parseFloat(product.mrp || product.price);
+                    const currentPrice = parseFloat(product.price);
+                    const discount = mrp > currentPrice ? Math.round((mrp - currentPrice) / mrp * 100) : 0;
+                    const isFav = !!favoriteMap[product._id];
+                    const quantity = cartMap[product._id] || 0;
+                    
+                    // Generate button HTML based on cart state
+                    let buttonHtml = '';
+                    if (quantity > 0) {
+                        buttonHtml = `
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #4caf50; color: white; border-radius: 8px; padding: 8px; min-height: 40px;" 
+                                 data-product-id="${product._id}" 
+                                 data-product-name="${product.name}" 
+                                 data-product-image="${product.image}" 
+                                 data-product-price="${product.price}" 
+                                 data-product-weight="${product.weight || ''}" 
+                                 data-product-weightunit="${product.weightUnit || ''}">
+                                <button class="cart-decrease-btn" data-product-id="${product._id}" style="background: #4caf50; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold;">-</button>
+                                <span class="cart-quantity" style="font-weight: 600; min-width: 20px; text-align: center;">${quantity}</span>
+                                <button class="cart-increase-btn" data-product-id="${product._id}" style="background: #4caf50; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold;">+</button>
+                            </div>
+                        `;
+                    } else {
+                        buttonHtml = `
+                            <button class="add-btn" id="add-btn-${product._id}" data-product-id="${product._id}" data-product-name="${product.name}" data-product-image="${product.image}" data-product-price="${product.price}" data-product-weight="${product.weight || ''}" data-product-weightunit="${product.weightUnit || ''}">
+                                ADD
+                            </button>
+                        `;
+                    }
+                    
+                    card.innerHTML = `
+                        <button class="favorite-btn${isFav ? ' active' : ''}" data-id="${product._id}" data-favid="${isFav || ''}" data-category="${categoryName}" data-name="${product.name}" data-image="${product.image}" data-price="${product.price}" data-weight="${product.weight || ''}" data-weightunit="${product.weightUnit || ''}">
+                            <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
+                        </button>
+                        <div class="product-image-container">
+                            <img src="${product.image}" alt="${product.name}" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-weight">${product.weight ? `${product.weight}${product.weightUnit}` : ''}</div>
+                            <div class="product-price">
+                                <span class="current-price">₹${currentPrice}</span>
+                                ${mrp > currentPrice ? `
+                                    <span class="mrp">MRP ₹${mrp}</span>
+                                    <span class="discount">${discount}% OFF</span>
+                                ` : ''}
+                            </div>
+                            ${buttonHtml}
+                        </div>
+                    `;
+
+                    // Add click event to navigate to product detail page
+                    card.addEventListener('click', function(e) {
+                        // Don't navigate if clicking on favorite button, add button, or cart buttons
+                        if (e.target.closest('.favorite-btn') || 
+                            e.target.closest('.add-btn') ||
+                            e.target.closest('.cart-decrease-btn') ||
+                            e.target.closest('.cart-increase-btn')) return;
+                        
+                        window.location.href = `product-detail.html?category=${encodeURIComponent(categoryName)}&id=${product._id}`;
+                    });
+
+                    // Add favorite toggle functionality
+                    const favBtn = card.querySelector('.favorite-btn');
+                    favBtn.onclick = async function(e) {
+                        e.preventDefault();
+                        e.stopPropagation(); // Prevent card click
+                        const productId = this.getAttribute('data-id');
+                        if (!this.classList.contains('active')) {
+                            // Add to favorites
+                            const body = {
+                                productId,
+                                category: this.getAttribute('data-category'),
+                                name: this.getAttribute('data-name'),
+                                image: this.getAttribute('data-image'),
+                                price: this.getAttribute('data-price'),
+                                weight: this.getAttribute('data-weight'),
+                                weightUnit: this.getAttribute('data-weightunit')
+                            };
+                            const userDbName = localStorage.getItem('userDbName');
+                            const res = await fetch('/api/home/favorites', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', ...(userDbName ? { 'x-user-db': userDbName } : {}) },
+                                body: JSON.stringify(body)
+                            });
+                            if (res.ok) {
+                                this.classList.add('active');
+                                this.querySelector('i').classList.remove('far');
+                                this.querySelector('i').classList.add('fas');
+                            }
+                        } else {
+                            // Remove from favorites
+                            const userDbName = localStorage.getItem('userDbName');
+                            const res = await fetch(`/api/home/favorites/${productId}`, { 
+                                method: 'DELETE',
+                                headers: userDbName ? { 'x-user-db': userDbName } : {}
+                            });
+                            if (res.ok) {
+                                this.classList.remove('active');
+                                this.querySelector('i').classList.remove('fas');
+                                this.querySelector('i').classList.add('far');
+                            }
+                        }
+                    };
+
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error('Error loading products:', err);
+                document.getElementById('productsGrid').innerHTML = 
+                    '<div class="text-danger">Error loading products. Please try again later.</div>';
+            }
+        }
+
+        // Initial load
+        loadProducts();
+
+
+        // Search functionality
+        document.getElementById('productSearch').addEventListener('input', function() {
+            loadProducts(this.value);
+        });
+
+        // Update cart buttons based on cart state
+        function updateCartButtons() {
+            // Find all products in the grid and update their buttons
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const addBtn = card.querySelector('.add-btn');
+                const quantitySelector = card.querySelector('.cart-quantity');
+                
+                if (addBtn) {
+                    const productId = addBtn.getAttribute('data-product-id');
+                    const quantity = cartMap[productId] || 0;
+                    
+                    if (quantity > 0) {
+                        // Get product data from the button attributes
+                        const productName = addBtn.getAttribute('data-product-name');
+                        const productImage = addBtn.getAttribute('data-product-image');
+                        const productPrice = addBtn.getAttribute('data-product-price');
+                        const productWeight = addBtn.getAttribute('data-product-weight');
+                        const productWeightUnit = addBtn.getAttribute('data-product-weightunit');
+                        
+                        // Replace ADD button with quantity selector
+                        addBtn.outerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #4caf50; color: white; border-radius: 8px; padding: 8px; min-height: 40px;" 
+                                 data-product-id="${productId}" 
+                                 data-product-name="${productName}" 
+                                 data-product-image="${productImage}" 
+                                 data-product-price="${productPrice}" 
+                                 data-product-weight="${productWeight}" 
+                                 data-product-weightunit="${productWeightUnit}">
+                                <button class="cart-decrease-btn" data-product-id="${productId}" style="background: #4caf50; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold;">-</button>
+                                <span class="cart-quantity" style="font-weight: 600; min-width: 20px; text-align: center;">${quantity}</span>
+                                <button class="cart-increase-btn" data-product-id="${productId}" style="background: #4caf50; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold;">+</button>
+                            </div>
+                        `;
+                    }
+                } else if (quantitySelector) {
+                    // Update existing quantity selector
+                    const parentDiv = quantitySelector.closest('div');
+                    const productId = parentDiv.getAttribute('data-product-id');
+                    const quantity = cartMap[productId] || 0;
+                    quantitySelector.textContent = quantity;
+                    
+                    if (quantity === 0) {
+                        // Get product data from the parent div attributes
+                        const productName = parentDiv.getAttribute('data-product-name');
+                        const productImage = parentDiv.getAttribute('data-product-image');
+                        const productPrice = parentDiv.getAttribute('data-product-price');
+                        const productWeight = parentDiv.getAttribute('data-product-weight');
+                        const productWeightUnit = parentDiv.getAttribute('data-product-weightunit');
+                        
+                        // Replace quantity selector with ADD button
+                        parentDiv.outerHTML = `
+                            <button class="add-btn" id="add-btn-${productId}" 
+                                    data-product-id="${productId}" 
+                                    data-product-name="${productName}" 
+                                    data-product-image="${productImage}" 
+                                    data-product-price="${productPrice}" 
+                                    data-product-weight="${productWeight}" 
+                                    data-product-weightunit="${productWeightUnit}">
+                                ADD
+                            </button>
+                        `;
+                    }
+                }
+            });
+        }
+
+        // Event delegation for add buttons and cart buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('add-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const name = e.target.getAttribute('data-product-name');
+                const image = e.target.getAttribute('data-product-image');
+                const price = e.target.getAttribute('data-product-price');
+                const weight = e.target.getAttribute('data-product-weight');
+                const weightUnit = e.target.getAttribute('data-product-weightunit');
+                console.log('ADD button clicked for product:', productId);
+                handleAddToCart(productId, name, image, price, weight, weightUnit);
+            } else if (e.target.classList.contains('cart-decrease-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const currentQuantity = cartMap[productId] || 0;
+                console.log('Decrease clicked for product:', productId, 'current quantity:', currentQuantity);
+                if (currentQuantity > 0) {
+                    updateCartQuantity(productId, currentQuantity - 1);
+                }
+                return false;
+            } else if (e.target.classList.contains('cart-increase-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productId = e.target.getAttribute('data-product-id');
+                const currentQuantity = cartMap[productId] || 0;
+                console.log('Increase clicked for product:', productId, 'current quantity:', currentQuantity);
+                updateCartQuantity(productId, currentQuantity + 1);
+                return false;
+            }
+        });
+
+        // Cart functions
+        async function handleAddToCart(productId, name, image, price, weight, weightUnit) {
+            try {
+                console.log('Adding to cart:', productId, name);
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) {
+                    alert('Please login to add items to cart');
+                    return;
+                }
+                
+                // Update local state first
+                cartMap[productId] = (cartMap[productId] || 0) + 1;
+                updateCartButtons();
+                
+                const body = {
+                    productId,
+                    category: categoryName,
+                    name,
+                    image,
+                    price: parseFloat(price),
+                    weight: weight || '',
+                    weightUnit: weightUnit || ''
+                };
+                
+                const res = await fetch('/api/home/cart', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName 
+                    },
+                    body: JSON.stringify(body)
+                });
+                
+                if (res.ok) {
+                    console.log('Item added to cart successfully');
+                    // Notify other tabs about cart update
+                    localStorage.setItem('cartUpdated', Date.now().toString());
+                } else {
+                    const error = await res.json();
+                    console.error('Failed to add to cart:', error);
+                    // Revert local state on error
+                    cartMap[productId] = (cartMap[productId] || 1) - 1;
+                    if (cartMap[productId] <= 0) {
+                        delete cartMap[productId];
+                    }
+                    updateCartButtons();
+                    alert('Failed to add to cart: ' + (error.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error adding to cart:', err);
+                // Revert local state on error
+                cartMap[productId] = (cartMap[productId] || 1) - 1;
+                if (cartMap[productId] <= 0) {
+                    delete cartMap[productId];
+                }
+                updateCartButtons();
+                alert('Error adding to cart');
+            }
+        }
+
+        // Update cart quantity
+        async function updateCartQuantity(productId, newQuantity) {
+            try {
+                const userDbName = localStorage.getItem('userDbName');
+                if (!userDbName) {
+                    alert('Please login to update cart');
+                    return;
+                }
+                
+                // Update local state first
+                if (newQuantity === 0) {
+                    delete cartMap[productId];
+                } else {
+                    cartMap[productId] = newQuantity;
+                }
+                
+                const res = await fetch(`/api/home/cart/${productId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName 
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                });
+                
+                if (res.ok) {
+                    updateCartButtons();
+                    // Notify other tabs about cart update
+                    localStorage.setItem('cartUpdated', Date.now().toString());
+                } else {
+                    const error = await res.json();
+                    console.error('Failed to update cart:', error);
+                    // Revert local state on error
+                    if (newQuantity === 0) {
+                        cartMap[productId] = 1;
+                    } else {
+                        cartMap[productId] = newQuantity - 1;
+                    }
+                    updateCartButtons();
+                    alert('Failed to update cart: ' + (error.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error updating cart:', err);
+                // Revert local state on error
+                if (newQuantity === 0) {
+                    cartMap[productId] = 1;
+                } else {
+                    cartMap[productId] = newQuantity - 1;
+                }
+                updateCartButtons();
+                alert('Error updating cart');
+            }
+        }
+
+
+        // Refresh cart data when page becomes visible (user returns from another page)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('Page became visible, refreshing cart data...');
+                loadCartItems().then(() => {
+                    updateCartButtons();
+                });
+            }
+        });
+
+        // Also refresh cart data when page gains focus
+        window.addEventListener('focus', function() {
+            console.log('Window focused, refreshing cart data...');
+            loadCartItems().then(() => {
+                updateCartButtons();
+            });
+        });
+
+        // Listen for storage changes to sync cart between tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cartUpdated') {
+                console.log('Cart updated in another tab, refreshing...');
+                loadCartItems().then(() => {
+                    updateCartButtons();
+                });
+            }
+        });
+
+        // Patch goFavorites button
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('goFavorites').onclick = function() {
+                window.location.href = 'favorites.html';
+            };
+        });
+    </script>
+</body>
+</html> 
