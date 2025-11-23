@@ -257,22 +257,85 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        
+        .payment-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .payment-method-display {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .payment-method-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+        }
+        
+        .payment-method-label i {
+            font-size: 10px;
+        }
+        
+        .payment-method-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
         }
         
         .total-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 2px;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .total-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
         }
         
         .total-text {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #222;
         }
         
-        .add-address-btn {
+        .place-order-btn {
+            background: #e31837;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .place-order-btn:hover {
+            background: #c0142e;
+        }
+        
+        .add-address-btn, .select-payment-btn {
             background: #4caf50;
             color: white;
             border: none;
@@ -281,11 +344,62 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            min-width: 120px;
+            min-width: 140px;
         }
         
-        .add-address-btn:hover {
+        .add-address-btn:hover, .select-payment-btn:hover {
             background: #45a049;
+        }
+
+        .order-success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 4000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .order-success-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            width: 80%;
+            max-width: 320px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .order-success-card i {
+            font-size: 64px;
+            color: #4caf50;
+            margin-bottom: 16px;
+        }
+
+        .order-success-card h3 {
+            margin: 0 0 8px 0;
+            color: #222;
+        }
+
+        .order-success-card p {
+            margin: 0;
+            color: #666;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         /* Empty cart state */
@@ -488,6 +602,133 @@
             color: #222;
             font-weight: 500;
         }
+
+        /* Payment Selection Modal */
+        .payment-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .payment-modal-content {
+            background: white;
+            width: 100%;
+            max-height: 90vh;
+            border-radius: 20px 20px 0 0;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .payment-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .payment-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .payment-section {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .payment-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 8px;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .payment-option:hover {
+            background: #f5f5f5;
+        }
+
+        .payment-option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .payment-option-info {
+            flex: 1;
+        }
+
+        .payment-option-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #222;
+            margin-bottom: 2px;
+        }
+
+        .payment-option-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .payment-option-arrow {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .upi-icon {
+            background: linear-gradient(135deg, #6c63ff 0%, #48c6ef 100%);
+            color: white;
+        }
+
+        .phonepe-icon {
+            background: #5f259f;
+            color: white;
+        }
+
+        .googlepay-icon {
+            background: #4285f4;
+            color: white;
+        }
+
+        .paytm-icon {
+            background: #00baf2;
+            color: white;
+        }
+
+        .cod-icon {
+            background: #4caf50;
+            color: white;
+        }
         
         @media (max-width: 768px) {
             .header {
@@ -662,10 +903,97 @@
     <!-- Bottom Summary -->
     <div class="bottom-summary" id="bottomSummary" style="display: none;">
         <div class="summary-row">
-            <div class="total-section">
-                <div class="total-text">Total: ₹<span id="totalPrice">0.00</span></div>
+            <div class="payment-info-section" id="paymentInfoSection" style="display: none;" onclick="openPaymentModal()">
+                <div class="payment-method-label">
+                    <span>PAY USING</span>
+                    <i class="fas fa-chevron-up"></i>
+                </div>
+                <div class="payment-method-name" id="selectedPaymentMethod">Select Payment Mode</div>
             </div>
-            <button class="add-address-btn" id="bottomButton" onclick="proceedToCheckout()">Add Address</button>
+            <div class="total-section">
+                <div class="total-label">TOTAL</div>
+                <div class="total-text">₹<span id="totalPrice">0.00</span></div>
+            </div>
+            <button class="add-address-btn" id="bottomButton" onclick="handleBottomButtonClick()">Add Address</button>
+        </div>
+    </div>
+
+    <!-- Payment Selection Modal -->
+    <div class="payment-modal" id="paymentModal" style="display: none;">
+        <div class="payment-modal-content">
+            <div class="payment-modal-header">
+                <h3>Bill total: ₹<span id="modalTotalPrice">0.00</span></h3>
+                <button class="close-btn" onclick="closePaymentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="payment-section">
+                <div class="payment-section-title">Recommended</div>
+                <div class="payment-option" onclick="selectPayment('PhonePe UPI')">
+                    <div class="payment-option-icon phonepe-icon">
+                        <i class="fab fa-google-pay"></i>
+                    </div>
+                    <div class="payment-option-info">
+                        <div class="payment-option-name">PhonePe UPI</div>
+                    </div>
+                    <i class="fas fa-chevron-right payment-option-arrow"></i>
+                </div>
+                <div class="payment-option" onclick="selectPayment('Google Pay UPI')">
+                    <div class="payment-option-icon googlepay-icon">
+                        <i class="fab fa-google-pay"></i>
+                    </div>
+                    <div class="payment-option-info">
+                        <div class="payment-option-name">Google Pay UPI</div>
+                    </div>
+                    <i class="fas fa-chevron-right payment-option-arrow"></i>
+                </div>
+            </div>
+
+            <div class="payment-section">
+                <div class="payment-section-title">Pay By Any UPI App</div>
+                <div class="payment-option" onclick="selectPayment('Paytm UPI')">
+                    <div class="payment-option-icon paytm-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="payment-option-info">
+                        <div class="payment-option-name">Paytm UPI</div>
+                    </div>
+                    <i class="fas fa-chevron-right payment-option-arrow"></i>
+                </div>
+                <div class="payment-option" onclick="selectPayment('Other UPI')">
+                    <div class="payment-option-icon upi-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="payment-option-info">
+                        <div class="payment-option-name">Other UPI App</div>
+                    </div>
+                    <i class="fas fa-chevron-right payment-option-arrow"></i>
+                </div>
+            </div>
+
+            <div class="payment-section">
+                <div class="payment-section-title">Cash On Delivery</div>
+                <div class="payment-option" onclick="selectPayment('Cash on Delivery')">
+                    <div class="payment-option-icon cod-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="payment-option-info">
+                        <div class="payment-option-name">Cash on Delivery</div>
+                        <div class="payment-option-subtitle">Pay when you receive</div>
+                    </div>
+                    <i class="fas fa-chevron-right payment-option-arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Overlay -->
+    <div class="order-success-overlay" id="orderSuccessOverlay">
+        <div class="order-success-card">
+            <i class="fas fa-check-circle"></i>
+            <h3>Order Placed!</h3>
+            <p>Your order is on its way</p>
         </div>
     </div>
 
@@ -673,6 +1001,7 @@
         let cartItems = [];
         let cartMap = {};
         let userAddress = null;
+        let selectedPaymentMethod = null;
 
         // Load cart items
         async function loadCartItems() {
@@ -866,14 +1195,107 @@
             }
         });
 
-        // Proceed to checkout
-        function proceedToCheckout() {
+        // Open payment modal
+        function openPaymentModal() {
+            if (!userAddress) {
+                alert('Please add delivery address first');
+                openAddressModal();
+                return;
+            }
+            
+            // Update modal total
+            const totalPrice = document.getElementById('totalPrice').textContent;
+            document.getElementById('modalTotalPrice').textContent = totalPrice;
+            
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        // Close payment modal
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // Select payment method
+        function selectPayment(paymentMethod) {
+            selectedPaymentMethod = paymentMethod;
+            localStorage.setItem('selectedPaymentMethod', paymentMethod);
+            closePaymentModal();
+            updateBottomButtonState();
+        }
+
+        // Place order
+        async function placeOrder() {
+            if (!userAddress) {
+                alert('Please add delivery address first');
+                openAddressModal();
+                return;
+            }
+            
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method');
+                openPaymentModal();
+                return;
+            }
+            
             if (cartItems.length === 0) {
                 alert('Your cart is empty');
                 return;
             }
-            // This function is now handled by the bottom button which changes based on address state
-            openAddressModal();
+
+            const userDbName = localStorage.getItem('userDbName');
+            if (!userDbName) {
+                alert('Please login again');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/home/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-user-db': userDbName
+                    },
+                    body: JSON.stringify({ paymentMethod: selectedPaymentMethod })
+                });
+
+                if (!res.ok) {
+                    const error = await res.json().catch(() => ({}));
+                    alert(error.error || 'Failed to place order');
+                    return;
+                }
+
+                await res.json();
+                selectedPaymentMethod = null;
+                localStorage.removeItem('selectedPaymentMethod');
+                cartItems = [];
+                cartMap = {};
+                showEmptyCart();
+                updateBottomButtonState();
+                showOrderSuccess();
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 2500);
+            } catch (err) {
+                console.error('Error placing order:', err);
+                alert('Error placing order');
+            }
+        }
+
+        // Load saved payment method
+        function loadPaymentMethod() {
+            const saved = localStorage.getItem('selectedPaymentMethod');
+            if (saved) {
+                selectedPaymentMethod = saved;
+            }
+        }
+
+        function showOrderSuccess() {
+            const overlay = document.getElementById('orderSuccessOverlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 2000);
         }
 
         // Listen for storage changes to sync cart between tabs
@@ -953,9 +1375,8 @@
             document.getElementById('deliverySection').style.display = 'flex';
             document.getElementById('addAddressPrompt').style.display = 'none';
             
-            // Update bottom button to payment mode
-            document.getElementById('bottomButton').textContent = 'Select Payment Mode';
-            document.getElementById('bottomButton').onclick = selectPaymentMode;
+            // Show payment info section
+            updateBottomButtonState();
         }
 
         // Show add address prompt
@@ -963,9 +1384,48 @@
             document.getElementById('deliverySection').style.display = 'none';
             document.getElementById('addAddressPrompt').style.display = 'flex';
             
-            // Update bottom button to add address
+            // Hide payment info section
+            document.getElementById('paymentInfoSection').style.display = 'none';
             document.getElementById('bottomButton').textContent = 'Add Address';
-            document.getElementById('bottomButton').onclick = openAddressModal;
+            document.getElementById('bottomButton').className = 'add-address-btn';
+        }
+
+        // Update bottom button state based on address and payment selection
+        function updateBottomButtonState() {
+            const bottomButton = document.getElementById('bottomButton');
+            const paymentInfoSection = document.getElementById('paymentInfoSection');
+            
+            if (!userAddress) {
+                // No address - show Add Address button
+                paymentInfoSection.style.display = 'none';
+                bottomButton.textContent = 'Add Address';
+                bottomButton.className = 'add-address-btn';
+                bottomButton.onclick = openAddressModal;
+            } else if (!selectedPaymentMethod) {
+                // Address exists but no payment selected - show Select Payment Mode
+                paymentInfoSection.style.display = 'none';
+                bottomButton.textContent = 'Select Payment Mode';
+                bottomButton.className = 'select-payment-btn';
+                bottomButton.onclick = openPaymentModal;
+            } else {
+                // Address and payment selected - show Place Order
+                paymentInfoSection.style.display = 'flex';
+                document.getElementById('selectedPaymentMethod').textContent = selectedPaymentMethod;
+                bottomButton.innerHTML = 'Place Order <i class="fas fa-chevron-right"></i>';
+                bottomButton.className = 'place-order-btn';
+                bottomButton.onclick = placeOrder;
+            }
+        }
+
+        // Handle bottom button click
+        function handleBottomButtonClick() {
+            if (!userAddress) {
+                openAddressModal();
+            } else if (!selectedPaymentMethod) {
+                openPaymentModal();
+            } else {
+                placeOrder();
+            }
         }
 
         // Open address modal
@@ -1048,6 +1508,7 @@
                     userAddress = savedProfile.address;
                     closeAddressModal();
                     displayUserAddress();
+                    updateBottomButtonState();
                 } else {
                     try {
                         const error = await res.json();
@@ -1240,8 +1701,17 @@
                 localStorage.setItem('userDbName', 'testuser_' + Date.now());
             }
             
+            loadPaymentMethod();
             loadCartItems();
             loadUserAddress();
+        });
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const paymentModal = document.getElementById('paymentModal');
+            if (e.target === paymentModal) {
+                closePaymentModal();
+            }
         });
     </script>
 </body>

@@ -420,6 +420,72 @@ router.delete('/cart/:productId', async (req, res) => {
     }
 });
 
+// POST /api/home/orders - place an order
+router.post('/orders', async (req, res) => {
+    try {
+        const client = mongoose.connection.getClient();
+        const userDb = getUserDb(client, req);
+
+        if (!userDb) {
+            return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
+        }
+
+        const userDbName = req.header('x-user-db');
+        const paymentMethod = req.body.paymentMethod || 'Not specified';
+
+        const cartCol = userDb.collection('cart');
+        const profileCol = userDb.collection('profile');
+
+        const cartItems = await cartCol.find().toArray();
+        if (!cartItems.length) {
+            return res.status(400).json({ error: 'Cart is empty' });
+        }
+
+        const profile = await profileCol.findOne({ userId: userDbName });
+
+        const items = cartItems.map(item => ({
+            productId: item.productId,
+            category: item.category,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            weight: item.weight,
+            weightUnit: item.weightUnit
+        }));
+
+        const totalAmount = items.reduce((sum, item) => {
+            return sum + Number(item.price || 0) * Number(item.quantity || 0);
+        }, 0);
+
+        const orderDoc = {
+            placedAt: new Date(),
+            userDbName,
+            paymentMethod,
+            totalAmount,
+            user: {
+                username: profile?.username || 'User',
+                phone: profile?.phone || '',
+                address: profile?.address || null
+            },
+            items
+        };
+
+        const ordersDb = client.db('Orders');
+        const orderCollection = ordersDb.collection('neworders');
+        const insertResult = await orderCollection.insertOne(orderDoc);
+
+        await cartCol.deleteMany({});
+
+        res.json({
+            message: 'Order placed successfully',
+            orderId: insertResult.insertedId
+        });
+    } catch (err) {
+        console.error('Error placing order:', err);
+        res.status(500).json({ error: 'Failed to place order', details: err.message });
+    }
+});
+
 // PROFILE ENDPOINTS
 // Test endpoint to verify routing
 router.get('/profile/test', (req, res) => {

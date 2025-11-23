@@ -292,4 +292,254 @@ router.put('/products/:category/:id', productUpload.single('image'), async (req,
     }
 });
 
+// Orders Management
+// GET /api/admin/orders/all - get all orders (new + completed) for order ID calculation
+router.get('/orders/all', async (req, res) => {
+    try {
+        // Ensure MongoDB connection is ready
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(MONGODB_URI, { dbName });
+        }
+        
+        const client = mongoose.connection.getClient();
+        const ordersDb = client.db('Orders');
+        const newOrdersCollection = ordersDb.collection('neworders');
+        const finishCollection = ordersDb.collection('finish');
+        
+        // Fetch both new and completed orders - handle errors gracefully
+        let newOrders = [];
+        let completedOrders = [];
+        
+        try {
+            newOrders = await newOrdersCollection.find().toArray();
+        } catch (err) {
+            console.warn('Error fetching new orders:', err);
+        }
+        
+        try {
+            completedOrders = await finishCollection.find().toArray();
+        } catch (err) {
+            console.warn('Error fetching completed orders from finish collection:', err);
+        }
+        
+        // Combine all orders
+        const allOrders = [...newOrders, ...completedOrders];
+        
+        res.json(allOrders);
+    } catch (err) {
+        console.error('Error fetching all orders:', err);
+        res.status(500).json({ error: 'Failed to fetch all orders', details: err.message });
+    }
+});
+
+// GET /api/admin/orders - get all orders from neworders collection
+router.get('/orders', async (req, res) => {
+    try {
+        // Ensure MongoDB connection is ready
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(MONGODB_URI, { dbName });
+        }
+        
+        const client = mongoose.connection.getClient();
+        const ordersDb = client.db('Orders');
+        const ordersCollection = ordersDb.collection('neworders');
+        const orders = await ordersCollection.find().sort({ placedAt: -1 }).toArray();
+        res.json(orders);
+    } catch (err) {
+        console.error('Error fetching orders:', err);
+        res.status(500).json({ error: 'Failed to fetch orders', details: err.message });
+    }
+});
+
+// GET /api/admin/orders/completed - get all completed orders from finish collection (MUST be before /orders/:id)
+router.get('/orders/completed', async (req, res) => {
+    try {
+        // Ensure MongoDB connection is ready
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(MONGODB_URI, { dbName });
+        }
+        
+        // Wait a bit to ensure connection is fully established
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const client = mongoose.connection.getClient();
+        if (!client) {
+            throw new Error('MongoDB client is not available');
+        }
+        
+        const ordersDb = client.db('Orders');
+        if (!ordersDb) {
+            throw new Error('Cannot access Orders database');
+        }
+        
+        const finishCollection = ordersDb.collection('finish');
+        
+        // Try to get a count first to verify collection access
+        const count = await finishCollection.countDocuments();
+        console.log(`Found ${count} documents in finish collection`);
+        
+        // Fetch all orders - sort by placedAt descending (most recent first)
+        // If completedAt exists, it will be used, otherwise placedAt is used
+        const orders = await finishCollection.find({})
+            .sort({ placedAt: -1 })
+            .toArray();
+        
+        // If orders have completedAt, sort by that instead
+        if (orders.length > 0 && orders[0].completedAt) {
+            orders.sort((a, b) => {
+                const aTime = a.completedAt ? new Date(a.completedAt).getTime() : new Date(a.placedAt).getTime();
+                const bTime = b.completedAt ? new Date(b.completedAt).getTime() : new Date(b.placedAt).getTime();
+                return bTime - aTime; // Descending
+            });
+        }
+        
+        console.log(`Successfully fetched ${orders.length} completed orders from finish collection`);
+        res.json(orders);
+    } catch (err) {
+        console.error('Error fetching completed orders:', err);
+        console.error('Error details:', {
+            message: err.message,
+            name: err.name,
+            stack: err.stack
+        });
+        res.status(500).json({ 
+            error: 'Failed to fetch completed orders', 
+            details: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
+});
+
+// GET /api/admin/orders/completed/:id - get a single completed order by ID (MUST be before /orders/:id)
+router.get('/orders/completed/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Validate ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid order ID format' });
+        }
+        
+        // Ensure MongoDB connection is ready
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(MONGODB_URI, { dbName });
+        }
+        
+        const client = mongoose.connection.getClient();
+        const ordersDb = client.db('Orders');
+        const finishCollection = ordersDb.collection('finish');
+        const order = await finishCollection.findOne({ _id: new mongoose.Types.ObjectId(id) });
+        
+        if (!order) {
+            return res.status(404).json({ error: 'Completed order not found' });
+        }
+        
+        res.json(order);
+    } catch (err) {
+        console.error('Error fetching completed order:', err);
+        res.status(500).json({ error: 'Failed to fetch completed order', details: err.message });
+    }
+});
+
+// GET /api/admin/orders/:id - get a single order by ID
+router.get('/orders/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Validate ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid order ID format' });
+        }
+        
+        const client = mongoose.connection.getClient();
+        const ordersDb = client.db('Orders');
+        const ordersCollection = ordersDb.collection('neworders');
+        const order = await ordersCollection.findOne({ _id: new mongoose.Types.ObjectId(id) });
+        
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        
+        res.json(order);
+    } catch (err) {
+        console.error('Error fetching order:', err);
+        res.status(500).json({ error: 'Failed to fetch order', details: err.message });
+    }
+});
+
+// PUT /api/admin/orders/:id/complete - move order to finish collection
+router.put('/orders/:id/complete', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Validate ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid order ID format' });
+        }
+        
+        // Ensure MongoDB connection is ready
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(MONGODB_URI, { dbName });
+        }
+        
+        const client = mongoose.connection.getClient();
+        const ordersDb = client.db('Orders');
+        const newOrdersCollection = ordersDb.collection('neworders');
+        const finishCollection = ordersDb.collection('finish');
+        
+        // Find the order in neworders
+        const order = await newOrdersCollection.findOne({ _id: new mongoose.Types.ObjectId(id) });
+        
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        
+        // Add completedAt timestamp
+        order.completedAt = new Date();
+        
+        // Insert into finish collection
+        await finishCollection.insertOne(order);
+        
+        // Delete from neworders collection
+        await newOrdersCollection.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+        
+        res.json({ message: 'Order moved to completed orders successfully' });
+    } catch (err) {
+        console.error('Error completing order:', err);
+        res.status(500).json({ error: 'Failed to complete order', details: err.message });
+    }
+});
+
+// DELETE /api/admin/orders/completed/:id - delete a completed order
+router.delete('/orders/completed/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Validate ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid order ID format' });
+        }
+        
+        // Ensure MongoDB connection is ready
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(MONGODB_URI, { dbName });
+        }
+        
+        const client = mongoose.connection.getClient();
+        const ordersDb = client.db('Orders');
+        const finishCollection = ordersDb.collection('finish');
+        
+        const result = await finishCollection.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+        
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Completed order not found' });
+        }
+        
+        res.json({ message: 'Completed order deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting completed order:', err);
+        res.status(500).json({ error: 'Failed to delete completed order', details: err.message });
+    }
+});
+
 module.exports = router; 
