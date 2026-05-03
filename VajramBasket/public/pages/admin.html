@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VajramBasket Admin</title>
+    <title>VV Farms Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -239,6 +239,11 @@
             box-shadow: 0 4px 15px rgba(240,147,251,0.3);
             position: relative;
         }
+
+        .admin-icon.branding {
+            background: linear-gradient(135deg, #2d6a4f 0%, #1a4d3a 100%);
+            box-shadow: 0 4px 15px rgba(45, 106, 79, 0.35);
+        }
         
         .order-badge {
             position: absolute;
@@ -297,6 +302,10 @@
         
         .admin-action-card .btn.orders-btn {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .admin-action-card .btn.branding-btn {
+            background: linear-gradient(135deg, #2d6a4f 0%, #1a4d3a 100%);
         }
         
         .admin-action-card .btn:hover {
@@ -360,7 +369,7 @@
                 <i class="fas fa-bars"></i>
             </button>
             <div class="header-logo">
-                <img src="/Logo.jpg" alt="Vajra Basket Logo">
+                <img src="/Logo.jpg" alt="VV Farms Logo">
             </div>
         </div>
         <div class="header-right">
@@ -375,7 +384,7 @@
     <!-- Side Navigation (Offcanvas) -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sideNav">
         <div class="offcanvas-header flex-column align-items-start">
-            <img src="/Logo.jpg" alt="Vajra Basket Logo">
+            <img src="/Logo.jpg" alt="VV Farms Logo">
             <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
@@ -385,6 +394,7 @@
                 <li class="nav-item"><a class="nav-link" href="banner-management.html"><i class="fas fa-images me-2"></i>Banners</a></li>
                 <li class="nav-item"><a class="nav-link" href="users-management.html"><i class="fas fa-users me-2"></i>Users</a></li>
                 <li class="nav-item"><a class="nav-link" href="orders-management.html"><i class="fas fa-shopping-bag me-2"></i>Orders</a></li>
+                <li class="nav-item"><a class="nav-link" href="branding.html"><i class="fas fa-palette me-2"></i>Branding &amp; logos</a></li>
             </ul>
         </div>
     </div>
@@ -463,10 +473,24 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card admin-action-card h-100">
+                    <div class="card-body text-center">
+                        <div class="admin-icon branding mb-3">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h5 class="card-title">Branding &amp; logos</h5>
+                        <p class="card-text">Customize splash, logos, colors, and sign in page design.</p>
+                        <button class="btn branding-btn w-100" onclick="window.location.href='branding.html'">
+                            <i class="fas fa-image me-2"></i>Edit branding
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/header-logo.js" defer></script>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let orderCountInterval = null;
 

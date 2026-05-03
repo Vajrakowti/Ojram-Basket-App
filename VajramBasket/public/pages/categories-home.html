@@ -7,10 +7,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root{
+            --active-green:#2f8f66;
+            --text:#1f2937;
+            --muted:#6b7280;
+            --card:#ffffff;
+            --bg:#ffffff;
+        }
         body {
-            background: #f8f9fa;
+            background: var(--bg);
             margin: 0;
             padding: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: var(--text);
         }
         .navbar-custom {
             background: #fff;
@@ -51,100 +60,142 @@
         }
         .search-bar-container {
             background: #fff;
-            padding: 0.5rem 1rem 0.5rem 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            display: flex;
-            justify-content: center;
+            padding: 0.75rem 1rem 0.9rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
             position: sticky;
-            top: 64px;
+            top: 0;
             z-index: 99;
         }
-        .search-bar {
+        .search-shell{
             width: 100%;
-            max-width: 500px;
-            border-radius: 24px;
-            border: 1px solid #ddd;
-            padding: 0.5rem 1.5rem;
+            max-width: 640px;
+            margin: 0 auto;
+            background:#fff;
+            border:1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 0.65rem 0.85rem;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+        }
+        .search-shell i{ color:#e8587f; }
+        .search-bar{
+            border:none;
+            outline:none;
+            flex:1;
             font-size: 1rem;
-            outline: none;
-            transition: border 0.2s;
+            color: var(--text);
         }
-        .search-bar:focus {
-            border: 1.5px solid #6c63ff;
-        }
-        .categories-scroll {
-            display: flex;
-            overflow-x: auto;
-            gap: 18px;
-            padding: 24px 0 16px 0;
-            background: #e9eafc;
-            border-radius: 18px;
-            margin: 24px 0 0 0;
-            scrollbar-width: thin;
-            scrollbar-color: #6c63ff #e9eafc;
-        }
-        .categories-scroll::-webkit-scrollbar {
-            height: 10px;
-        }
-        .categories-scroll::-webkit-scrollbar-thumb {
-            background: #6c63ff;
-            border-radius: 8px;
-        }
-        .categories-scroll::-webkit-scrollbar-track {
-            background: #e9eafc;
-        }
-        .category-card {
-            min-width: 160px;
-            max-width: 180px;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 2px 12px rgba(108,99,255,0.07);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 18px 10px 12px 10px;
-            transition: box-shadow 0.2s, border 0.2s;
-            border: 2px solid transparent;
-            cursor: pointer;
-        }
-        .category-card.selected, .category-card:active {
-            border: 2px solid #ff9800;
-            box-shadow: 0 4px 18px rgba(255,152,0,0.10);
-        }
-        .category-card.first {
-            margin-left: 18px;
-        }
-        .category-card.last {
-            margin-right: 18px;
-        }
-        .category-card img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 14px;
-            margin-bottom: 10px;
-            background: #f3f3fa;
-        }
-        .category-card .category-name {
-            font-weight: 600;
-            font-size: 1rem;
+        .search-bar::placeholder{ color:#9ca3af; }
+
+        .no-results{
+            margin: 18px 0 0;
             text-align: center;
-            color: #222;
+            color:#9ca3af;
+            font-weight: 600;
         }
-        @media (max-width: 600px) {
-            .categories-scroll {
-                gap: 10px;
-                padding: 14px 0 10px 0;
-            }
-            .category-card {
-                min-width: 120px;
-                max-width: 140px;
-                padding: 12px 4px 8px 4px;
-            }
-            .category-card img {
-                width: 48px;
-                height: 48px;
-            }
+        .no-results .title{
+            color:#6b7280;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .no-results .desc{
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .content-wrap{
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 1rem 1rem;
+        }
+
+        .recent-wrap{
+            margin-top: 14px;
+        }
+        .recent-head{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-bottom: 10px;
+        }
+        .recent-title{
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            font-weight: 700;
+        }
+        .recent-clear{
+            border:none;
+            background:none;
+            color: #ef4444;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor:pointer;
+        }
+        .chip-row{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+        .chip{
+            border:1px solid #e5e7eb;
+            background:#fff;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color:#374151;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            cursor:pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+        .chip i{ color:#9ca3af; }
+
+        .mind-wrap{
+            margin-top: 18px;
+        }
+        .mind-title{
+            font-size: 0.85rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .mind-grid{
+            display:grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px 14px;
+        }
+        .mind-card{
+            border:none;
+            background: transparent;
+            cursor:pointer;
+            text-align:center;
+            padding: 0;
+        }
+        .mind-img{
+            width: 78px;
+            height: 78px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            object-fit: cover;
+            background:#f3f4f6;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+        }
+        .mind-name{
+            font-size: 0.92rem;
+            color:#374151;
+            font-weight: 600;
+        }
+        @media (min-width: 900px){
+            .mind-grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .mind-img{ width: 90px; height: 90px; }
         }
         /* Add these new styles */
         .search-results-container {
@@ -278,109 +329,231 @@
                 font-size: 1.1rem;
             }
         }
-        /* Bottom nav styles (copied from home.html) */
-        .bottom-nav {
+        /* Bottom nav styles (match home.html) */
+        body{ padding-bottom: 72px; }
+        .bottom-nav{
+            position:fixed;
+            left:0;
+            right:0;
+            bottom:0;
+            z-index:1050;
+            height:68px;
+            background:#fff;
+            border-top:1px solid rgba(0,0,0,0.06);
+            box-shadow:0 -10px 24px rgba(0,0,0,0.08);
+            display:flex;
+            align-items:center;
+            justify-content:space-around;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .bottom-nav .nav-item{
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            gap:4px;
+            padding:10px 0 8px;
+            text-decoration:none;
+            color:#8a9098;
+            font-size:12px;
+        }
+        .bottom-nav .nav-item i{ font-size:19px; }
+        .bottom-nav .nav-item.active{ color: var(--active-green); }
+
+        #catLoader{
             position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1050;
-            background: #fff;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 60px;
-            border-top: 1px solid #eee;
-            width: 100vw;
-            max-width: 100vw;
+            inset: 0;
+            z-index: 1200;
+            background: rgba(255,255,255,0.62);
+            backdrop-filter: blur(1px);
+            display:none;
+            align-items:center;
+            justify-content:center;
         }
-        .bottom-nav-item {
-            flex: 1;
-            text-align: center;
-            color: #444;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4px 0 0 0;
-            transition: color 0.2s;
+        #catLoader.show{ display:flex; }
+        .loader-bubble{
+            width:72px;height:72px;border-radius:50%;
+            background:rgba(255,255,255,0.96);
+            display:grid;place-items:center;
+            box-shadow:0 8px 24px rgba(0,0,0,0.14);
         }
-        .bottom-nav-item.active,
-        .bottom-nav-item:active,
-        .bottom-nav-item:focus {
-            color: #6c63ff;
+        .loader-spinner{
+            width:36px;height:36px;border-radius:50%;
+            border:4px solid #d7efe4;
+            border-top-color: var(--active-green);
+            animation:spin 0.8s linear infinite;
         }
-        .bottom-nav-item i {
-            font-size: 1.4rem;
-            margin-bottom: 2px;
-        }
-        @media (max-width: 768px) {
-            body {
-                padding-bottom: 60px;
-            }
-        }
+        @keyframes spin{ to{ transform:rotate(360deg);} }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <nav class="navbar-custom">
-        <div class="header-left">
-            <div class="header-logo">
-                <img src="/Logo.jpg" alt="Vajra Basket Logo">
-            </div>
-        </div>
-        <div class="header-right">
-            <button class="header-icon fav" type="button" id="goFavorites">
-                <i class="fas fa-heart"></i>
-            </button>
-            <button class="header-icon" type="button" onclick="window.location.href='cart.html'">
-                <i class="fas fa-shopping-cart"></i>
-            </button>
-        </div>
-    </nav>
-    <!-- Search Bar -->
-    <div class="search-bar-container">
-        <input class="search-bar" type="text" id="categorySearch" placeholder="Search categories or products...">
+    <div id="catLoader" aria-hidden="true">
+        <div class="loader-bubble"><div class="loader-spinner" role="status" aria-label="Loading"></div></div>
     </div>
-    <!-- Categories Horizontal Scroll -->
-    <div class="container">
-        <div class="categories-scroll" id="categoriesScroll"></div>
-        <!-- Search Results -->
+
+    <!-- Search Bar -->
+    <div class="search-bar-container" style="padding-top: 10px;">
+        <div class="search-shell">
+            <i class="fas fa-magnifying-glass"></i>
+            <input class="search-bar" type="text" id="categorySearch" placeholder='Search "chicken, milk, fruits..."' autocomplete="off">
+            <i class="fas fa-microphone"></i>
+        </div>
+    </div>
+
+    <div class="content-wrap">
+        <!-- Recent searches -->
+        <div class="recent-wrap d-none" id="recentWrap">
+            <div class="recent-head">
+                <div class="recent-title">Your recent searches</div>
+                <button class="recent-clear" id="clearRecentBtn" type="button">Clear</button>
+            </div>
+            <div class="chip-row" id="recentChips"></div>
+        </div>
+
+        <!-- What's on your mind -->
+        <div class="mind-wrap" id="mindWrap">
+            <div class="mind-title">What's on your mind?</div>
+            <div class="mind-grid" id="categoriesScroll"></div>
+        </div>
+
+        <!-- Search Results (products) -->
         <div class="search-results-container" id="searchResults" style="display: none;">
             <div class="search-results-title">Search Results</div>
             <div class="products-grid" id="productsGrid"></div>
         </div>
+
+        <div class="no-results d-none" id="noResults">
+            <div class="title">Uh-oh!</div>
+            <div class="desc" id="noResultsText">No results.</div>
+        </div>
     </div>
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="home.html" class="bottom-nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+        <a href="home.html" class="nav-item">
+            <i class="fas fa-house"></i><span>Home</span>
         </a>
-        <a href="categories-home.html" class="bottom-nav-item active">
-            <i class="fas fa-search"></i>
-            <span>Search</span>
+        <a href="categories-home.html" class="nav-item active">
+            <i class="fas fa-table-cells-large"></i><span>Categories</span>
         </a>
-        <a href="cart.html" class="bottom-nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
+        <a href="cart.html" class="nav-item">
+            <i class="fas fa-cart-shopping"></i><span>Cart</span>
         </a>
-        <a href="#" class="bottom-nav-item">
-            <i class="fas fa-box"></i>
-            <span>Orders</span>
-        </a>
-        <a href="#" class="bottom-nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
+        <a href="auth.html" class="nav-item">
+            <i class="fas fa-user"></i><span>Profile</span>
         </a>
     </nav>
     <script>
         let searchTimeout;
+        let recentSaveTimer;
         let favoriteMap = {};
         let cartMap = {};
+        let allCategories = [];
+        let loaderCount = 0;
+
+        function getUserDbName() {
+            try { return localStorage.getItem('userDbName') || ''; } catch (_) { return ''; }
+        }
+
+        async function apiFetch(url, options) {
+            const opts = options || {};
+            opts.headers = opts.headers || {};
+            const u = getUserDbName();
+            if (u) opts.headers['x-user-db'] = u;
+            return fetch(url, opts);
+        }
+
+        function beginLoading() {
+            loaderCount += 1;
+            document.getElementById('catLoader').classList.add('show');
+        }
+
+        function endLoading() {
+            loaderCount = Math.max(0, loaderCount - 1);
+            if (!loaderCount) document.getElementById('catLoader').classList.remove('show');
+        }
+
+        function normalizeTerm(t) {
+            return String(t || '').trim().replace(/\s+/g, ' ');
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, function (m) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+            });
+        }
+
+        function setNoResults(query, show) {
+            const wrap = document.getElementById('noResults');
+            const text = document.getElementById('noResultsText');
+            if (!wrap || !text) return;
+            if (!show) {
+                wrap.classList.add('d-none');
+                return;
+            }
+            const q = normalizeTerm(query);
+            text.innerHTML = `No results for <b>${escapeHtml(q)}</b> in Delivery. Please try something else.`;
+            wrap.classList.remove('d-none');
+        }
+
+        function setRecentVisibility(show) {
+            const wrap = document.getElementById('recentWrap');
+            if (show) wrap.classList.remove('d-none');
+            else wrap.classList.add('d-none');
+        }
+
+        function showRecent(terms) {
+            const wrap = document.getElementById('recentWrap');
+            const chips = document.getElementById('recentChips');
+            chips.innerHTML = '';
+            if (!terms || !terms.length) {
+                wrap.classList.add('d-none');
+                return;
+            }
+            wrap.classList.remove('d-none');
+            terms.forEach(term => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'chip';
+                btn.innerHTML = `<i class="far fa-clock"></i><span>${term}</span>`;
+                btn.onclick = () => {
+                    const inp = document.getElementById('categorySearch');
+                    inp.value = term;
+                    handleSearchInput();
+                };
+                chips.appendChild(btn);
+            });
+        }
+
+        async function loadRecent() {
+            const u = getUserDbName();
+            if (!u) {
+                showRecent([]);
+                return;
+            }
+            try {
+                const res = await apiFetch('/api/home/recent-searches');
+                const data = await res.json();
+                showRecent((data && data.terms) || []);
+            } catch (_) {
+                showRecent([]);
+            }
+        }
+
+        async function saveRecent(term) {
+            const u = getUserDbName();
+            if (!u) return;
+            const t = normalizeTerm(term);
+            if (!t || t.length < 2) return;
+            try {
+                await apiFetch('/api/home/recent-searches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ term: t }),
+                    keepalive: true
+                });
+            } catch (_) {}
+        }
 
         async function fetchFavorites() {
             try {
@@ -423,43 +596,57 @@
             }
         }
 
-        async function loadCategories(filter = "") {
-            const res = await fetch('/api/home/categories');
-            const categories = await res.json();
-            const scroll = document.getElementById('categoriesScroll');
-            scroll.innerHTML = '';
-            let filtered = categories;
-            if (filter) {
-                filtered = categories.filter(cat => 
-                    cat.name.toLowerCase().includes(filter.toLowerCase())
-                );
+        function renderCategories(filter = "") {
+            const grid = document.getElementById('categoriesScroll');
+            const mindWrap = document.getElementById('mindWrap');
+            const q = String(filter || '').toLowerCase();
+            const filtered = q
+                ? allCategories.filter(cat => String(cat.name || '').toLowerCase().includes(q))
+                : allCategories.slice();
+            grid.innerHTML = '';
+            if (!filtered.length) {
+                // When user types an item name (eg "apple"), don't show "No categories found" UI.
+                if (q) mindWrap.style.display = 'none';
+                else mindWrap.style.display = '';
+                return 0;
             }
-            if (filtered.length === 0) {
-                scroll.innerHTML = '<div class="text-muted px-3">No categories found.</div>';
-            } else {
-                filtered.forEach((cat, idx) => {
-                    const card = document.createElement('div');
-                    card.className = 'category-card';
-                    if (idx === 0) card.classList.add('first');
-                    if (idx === filtered.length - 1) card.classList.add('last');
-                    card.innerHTML = `
-                        <img src="${cat.image}" alt="${cat.name}">
-                        <div class="category-name">${cat.name}</div>
-                    `;
-                    card.onclick = () => {
-                        document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
-                        card.classList.add('selected');
-                        window.location.href = `products-home.html?category=${encodeURIComponent(cat.name)}`;
-                    };
-                    scroll.appendChild(card);
-                });
+            mindWrap.style.display = '';
+            filtered.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'mind-card';
+                btn.innerHTML = `
+                    <img class="mind-img" src="${cat.image}" alt="${cat.name}">
+                    <div class="mind-name">${cat.name}</div>
+                `;
+                btn.onclick = () => {
+                    // store the clicked category name (not the typed query)
+                    saveRecent(cat.name).then(loadRecent);
+                    window.location.href = `products-home.html?category=${encodeURIComponent(cat.name)}`;
+                };
+                grid.appendChild(btn);
+            });
+            return filtered.length;
+        }
+
+        async function loadAllCategories() {
+            beginLoading();
+            try {
+                const res = await fetch('/api/home/categories');
+                allCategories = await res.json();
+                renderCategories('');
+            } catch (e) {
+                allCategories = [];
+                renderCategories('');
+            } finally {
+                endLoading();
             }
         }
 
         async function searchProducts(query) {
             if (!query) {
                 document.getElementById('searchResults').style.display = 'none';
-                return;
+                return 0;
             }
             await fetchFavorites();
             await loadCartItems();
@@ -470,7 +657,9 @@
                 grid.innerHTML = '';
                 
                 if (products.length === 0) {
-                    grid.innerHTML = '<div class="text-muted">No products found.</div>';
+                    // If user typed a category name (eg "fruits"), don't show "No products found" UI.
+                    document.getElementById('searchResults').style.display = 'none';
+                    return 0;
                 } else {
                     products.forEach(product => {
                         const card = document.createElement('div');
@@ -538,6 +727,8 @@
                                 e.target.closest('.cart-decrease-btn') ||
                                 e.target.closest('.cart-increase-btn')) return;
                             
+                            // store the clicked item name (not the typed query)
+                            saveRecent(product.name).then(loadRecent);
                             window.location.href = `product-detail.html?category=${encodeURIComponent(product.categoryName)}&id=${product._id}`;
                         });
 
@@ -589,29 +780,100 @@
                     });
                 }
                 document.getElementById('searchResults').style.display = 'block';
+                return products.length;
             } catch (err) {
                 console.error('Error searching products:', err);
                 document.getElementById('productsGrid').innerHTML = 
                     '<div class="text-danger">Error searching products. Please try again later.</div>';
+                document.getElementById('searchResults').style.display = 'block';
+                return 0;
             }
         }
 
-        // Initial load
-        loadCategories();
+        function handleSearchInput() {
+            const query = normalizeTerm(document.getElementById('categorySearch').value);
+            setNoResults('', false);
 
-        // Search functionality with debouncing
-        document.getElementById('categorySearch').addEventListener('input', function() {
-            const query = this.value.trim();
-            
-            // Clear previous timeout
+            // show recent only when empty
+            if (query) setRecentVisibility(false);
+            else loadRecent();
+
+            // filter categories grid always
+            const catCount = renderCategories(query);
+
+            // product search (keep your existing feature)
             clearTimeout(searchTimeout);
-            
-            // Set new timeout
             searchTimeout = setTimeout(() => {
-                loadCategories(query);
-                searchProducts(query);
-            }, 300); // Wait 300ms after user stops typing
+                if (!query) {
+                    document.getElementById('searchResults').style.display = 'none';
+                    document.getElementById('mindWrap').style.display = '';
+                    setNoResults('', false);
+                    return;
+                }
+                beginLoading();
+                (async () => {
+                    try {
+                        const prodCount = await searchProducts(query);
+
+                        const mindWrap = document.getElementById('mindWrap');
+                        if (catCount > 0 && prodCount > 0) {
+                            // single letter: show both
+                            mindWrap.style.display = '';
+                            setNoResults('', false);
+                        } else if (catCount === 0 && prodCount > 0) {
+                            // item search: hide categories section
+                            mindWrap.style.display = 'none';
+                            setNoResults('', false);
+                        } else if (catCount > 0 && prodCount === 0) {
+                            // category search: show categories only
+                            mindWrap.style.display = '';
+                            setNoResults('', false);
+                        } else {
+                            // no matches in categories or items
+                            mindWrap.style.display = 'none';
+                            document.getElementById('searchResults').style.display = 'none';
+                            setNoResults(query, true);
+                        }
+                    } finally {
+                        endLoading();
+                    }
+                })();
+            }, 300);
+
+            // do NOT store raw typed query; store only on click (category / product)
+        }
+
+        document.getElementById('categorySearch').addEventListener('input', handleSearchInput);
+        document.getElementById('categorySearch').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                // do NOT store raw typed query; store only on click (category / product)
+            }
         });
+
+        document.getElementById('clearRecentBtn').addEventListener('click', async function () {
+            try {
+                beginLoading();
+                await apiFetch('/api/home/recent-searches', { method: 'DELETE' });
+                await loadRecent();
+            } finally {
+                endLoading();
+            }
+        });
+
+        // Initial load
+        (async function init() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('focus') === '1') document.getElementById('categorySearch').focus();
+            } catch (_) {}
+
+            await loadAllCategories();
+            await loadRecent();
+
+            const q = normalizeTerm(document.getElementById('categorySearch').value);
+            if (q) handleSearchInput();
+        })();
 
         // Update cart buttons based on cart state
         function updateCartButtons() {
@@ -858,10 +1120,14 @@
 
         // Patch goFavorites button
         window.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('goFavorites').onclick = function() {
-                window.location.href = 'favorites.html';
-            };
+            const fav = document.getElementById('goFavorites');
+            if (fav) {
+                fav.onclick = function() {
+                    window.location.href = 'favorites.html';
+                };
+            }
         });
     </script>
+    <script src="/js/header-logo.js" defer></script>
 </body>
 </html> 

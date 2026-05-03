@@ -3,8 +3,14 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
+const { uploadBuffer, destroyIfCloudinaryUrl } = require('../utils/cloudinaryUpload');
 
 const router = express.Router();
+
+const memoryUpload = multer({
+	storage: multer.memoryStorage(),
+	limits: { fileSize: 12 * 1024 * 1024 }
+});
 
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://Ojram:453471spvcars@ojrambasket.caraknd.mongodb.net/?retryWrites=true&w=majority&appName=OjramBasket';
@@ -26,38 +32,34 @@ if (!fs.existsSync(categoriesDir)) {
     fs.mkdirSync(categoriesDir, { recursive: true });
 }
 
-// Multer storage config for categories
-const categoryStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, categoriesDir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-const categoryUpload = multer({ storage: categoryStorage });
-
 // Helper to generate collection name from category name
 function getCollectionName(name) {
     return name.toLowerCase().replace(/\s+/g, '');
 }
 
 // POST /api/admin/categories - add a new category
-router.post('/categories', categoryUpload.single('image'), async (req, res) => {
+router.post('/categories', memoryUpload.single('image'), async (req, res) => {
     try {
         const { name } = req.body;
         if (!name || !req.file) {
             return res.status(400).json({ error: 'Name and image are required' });
         }
-        const imagePath = '/uploads/categories/' + req.file.filename;
-        // Save to categories collection
-        const category = new Category({ name, image: imagePath });
+        const uploaded = await uploadBuffer(req.file.buffer, {
+            folder: 'vajram/categories',
+            mimeType: req.file.mimetype,
+            public_id: `${Date.now()}-${path.basename(req.file.originalname, path.extname(req.file.originalname))}`.replace(/[^\w.-]/g, '_')
+        });
+        const imageUrl = uploaded.secure_url;
+        const category = new Category({ name, image: imageUrl });
         await category.save();
-        // Dynamically create a collection for the category name
         const categoryCollectionName = getCollectionName(name);
-        await mongoose.connection.createCollection(categoryCollectionName);
-        res.status(201).json({ name, image: imagePath });
+        await mongoose.connection.createCollection(categoryCollectionName).catch((e) => {
+            if (e.code === 48 || e.codeName === 'NamespaceExists') return;
+            throw e;
+        });
+        res.status(201).json({ name, image: imageUrl });
     } catch (err) {
+        console.error('Category create error:', err);
         if (err.code === 11000) {
             return res.status(409).json({ error: 'Category already exists' });
         }
@@ -81,6 +83,11 @@ router.delete('/categories/:id', async (req, res) => {
         const category = await Category.findByIdAndDelete(req.params.id);
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
+        }
+        await destroyIfCloudinaryUrl(category.image);
+        if (category.image && category.image.startsWith('/uploads/')) {
+            const localFile = path.join(__dirname, '../public', category.image);
+            fs.unlink(localFile, () => {});
         }
         // Drop the specific category collection
         const categoryCollectionName = getCollectionName(category.name);
@@ -108,35 +115,32 @@ if (!fs.existsSync(bannersDir)) {
     fs.mkdirSync(bannersDir, { recursive: true });
 }
 
-// Multer storage config for banners
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, bannersDir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-const upload = multer({ storage: storage });
-
-// Banner Schema
-const bannerSchema = new mongoose.Schema({
-    path: { type: String, required: true },
-    uploadedAt: { type: Date, default: Date.now }
-});
-const Banner = mongoose.models.Banner || mongoose.model('Banner', bannerSchema, 'banners');
+function bannersCol() {
+    return mongoose.connection.db.collection('banners');
+}
 
 // POST /api/admin/banners - upload one or more banner images
-router.post('/banners', upload.array('banners', 10), async (req, res) => {
+router.post('/banners', memoryUpload.array('banners', 10), async (req, res) => {
     if (!req.files || req.files.length === 0) {
         return res.status(400).json({ error: 'No files uploaded' });
     }
     try {
+        const bgColorRaw = String(req.body.bgColor || '').trim();
+        const bgColor = /^#[0-9a-fA-F]{6}$/.test(bgColorRaw) ? bgColorRaw : '';
         const docs = [];
         for (const file of req.files) {
-            const path = '/uploads/banners/' + file.filename;
-            const doc = await Banner.create({ path });
-            docs.push(doc);
+            const uploaded = await uploadBuffer(file.buffer, {
+                folder: 'vajram/banners',
+                mimeType: file.mimetype,
+                public_id: `${Date.now()}-${path.basename(file.originalname, path.extname(file.originalname))}`.replace(/[^\w.-]/g, '_')
+            });
+            const doc = {
+                path: uploaded.secure_url,
+                bgColor,
+                uploadedAt: new Date()
+            };
+            const result = await bannersCol().insertOne(doc);
+            docs.push({ _id: result.insertedId, ...doc });
         }
         res.status(201).json({ banners: docs });
     } catch (err) {
@@ -147,7 +151,7 @@ router.post('/banners', upload.array('banners', 10), async (req, res) => {
 // GET /api/admin/banners - list all banner images (from MongoDB)
 router.get('/banners', async (req, res) => {
     try {
-        const banners = await Banner.find().sort({ uploadedAt: -1 });
+        const banners = await bannersCol().find({}).sort({ uploadedAt: -1 }).toArray();
         res.json({ banners });
     } catch (err) {
         res.status(500).json({ error: 'Unable to fetch banners', details: err.message });
@@ -157,16 +161,18 @@ router.get('/banners', async (req, res) => {
 // DELETE /api/admin/banners/:id - delete a banner image by _id
 router.delete('/banners/:id', async (req, res) => {
     try {
-        const banner = await Banner.findByIdAndDelete(req.params.id);
-        if (!banner) return res.status(404).json({ error: 'Banner not found' });
-        const filePath = path.join(bannersDir, banner.path.split('/').pop());
-        fs.unlink(filePath, err => {
-            if (err) {
-                // File may already be gone, but still remove from DB
-                return res.status(200).json({ message: 'Banner deleted from DB, file missing.' });
-            }
-            res.json({ message: 'Banner deleted successfully' });
-        });
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ error: 'Invalid banner id' });
+        }
+        const banner = await bannersCol().findOneAndDelete({ _id: new mongoose.Types.ObjectId(req.params.id) });
+        const deleted = banner && (banner.value || banner);
+        if (!deleted) return res.status(404).json({ error: 'Banner not found' });
+        await destroyIfCloudinaryUrl(deleted.path);
+        if (deleted.path && deleted.path.startsWith('/uploads/')) {
+            const filePath = path.join(bannersDir, deleted.path.split('/').pop());
+            fs.unlink(filePath, () => {});
+        }
+        res.json({ message: 'Banner deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete banner', details: err.message });
     }
@@ -186,14 +192,8 @@ if (!fs.existsSync(productsDir)) {
     fs.mkdirSync(productsDir, { recursive: true });
 }
 
-const productStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, productsDir),
-    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
-});
-const productUpload = multer({ storage: productStorage });
-
 // POST /api/admin/products/:category
-router.post('/products/:category', productUpload.single('image'), async (req, res) => {
+router.post('/products/:category', memoryUpload.single('image'), async (req, res) => {
     const { category } = req.params;
     const collectionName = getCollectionName(category);
     const Product = mongoose.models[collectionName] || mongoose.model(collectionName, productSchema, collectionName);
@@ -202,9 +202,14 @@ router.post('/products/:category', productUpload.single('image'), async (req, re
         if (!req.file) {
             return res.status(400).json({ error: 'Product image is required.' });
         }
+        const uploaded = await uploadBuffer(req.file.buffer, {
+            folder: `vajram/products/${collectionName}`,
+            mimeType: req.file.mimetype,
+            public_id: `${Date.now()}-${path.basename(req.file.originalname, path.extname(req.file.originalname))}`.replace(/[^\w.-]/g, '_')
+        });
         const product = new Product({
             ...req.body,
-            image: `/uploads/products/${req.file.filename}`
+            image: uploaded.secure_url
         });
         await product.save();
         res.status(201).json(product);
@@ -254,6 +259,14 @@ router.delete('/products/:category/:id', async (req, res) => {
     const Product = mongoose.models[collectionName] || mongoose.model(collectionName, productSchema, collectionName);
     
     try {
+        const existing = await Product.findById(id);
+        if (!existing) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        await destroyIfCloudinaryUrl(existing.image);
+        if (existing.image && existing.image.startsWith('/uploads/')) {
+            fs.unlink(path.join(__dirname, '../public', existing.image), () => {});
+        }
         await Product.findByIdAndDelete(id);
         res.json({ message: 'Product deleted' });
     } catch (err) {
@@ -263,28 +276,34 @@ router.delete('/products/:category/:id', async (req, res) => {
 });
 
 // PUT /api/admin/products/:category/:id - update a product
-router.put('/products/:category/:id', productUpload.single('image'), async (req, res) => {
+router.put('/products/:category/:id', memoryUpload.single('image'), async (req, res) => {
     const { category, id } = req.params;
     const collectionName = getCollectionName(category);
     const Product = mongoose.models[collectionName] || mongoose.model(collectionName, productSchema, collectionName);
     
     try {
+        const previous = await Product.findById(id);
+        if (!previous) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
         const updateData = { ...req.body };
         
-        // If a new image is uploaded, update the image path
         if (req.file) {
-            updateData.image = `/uploads/products/${req.file.filename}`;
-        }
-        
-        // Remove image field if no new image was uploaded
-        if (!req.file) {
+            const uploaded = await uploadBuffer(req.file.buffer, {
+                folder: `vajram/products/${collectionName}`,
+                mimeType: req.file.mimetype,
+                public_id: `${Date.now()}-${path.basename(req.file.originalname, path.extname(req.file.originalname))}`.replace(/[^\w.-]/g, '_')
+            });
+            updateData.image = uploaded.secure_url;
+            await destroyIfCloudinaryUrl(previous.image);
+            if (previous.image && previous.image.startsWith('/uploads/')) {
+                fs.unlink(path.join(__dirname, '../public', previous.image), () => {});
+            }
+        } else {
             delete updateData.image;
         }
         
         const product = await Product.findByIdAndUpdate(id, updateData, { new: true });
-        if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
         res.json(product);
     } catch (err) {
         console.error(`Error updating product in ${category}:`, err);

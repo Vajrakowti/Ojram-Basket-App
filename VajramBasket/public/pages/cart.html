@@ -1010,7 +1010,7 @@
                 if (!userDbName) {
                     console.log('No user DB name found for cart, redirecting to login');
                     alert('Please login to access your cart');
-                    window.location.href = 'login.html';
+                    window.location.href = 'auth.html';
                     return;
                 }
                 
@@ -1245,7 +1245,7 @@
             const userDbName = localStorage.getItem('userDbName');
             if (!userDbName) {
                 alert('Please login again');
-                window.location.href = 'login.html';
+                window.location.href = 'auth.html';
                 return;
             }
 
@@ -1322,7 +1322,7 @@
                 if (!userDbName) {
                     console.log('No user DB name found, redirecting to login');
                     alert('Please login to access your cart and address');
-                    window.location.href = 'login.html';
+                    window.location.href = 'auth.html';
                     return;
                 }
                 

@@ -2,8 +2,16 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
+const { canonicalUserDbName } = require('../utils/userDbName');
+const { mergeBranding } = require('../utils/brandingStore');
 
 const router = express.Router();
+
+function getUserDbName(req) {
+    const raw = req.header('x-user-db') || req.query.userDb;
+    if (!raw) return null;
+    return canonicalUserDbName(raw);
+}
 
 const bannersDir = path.join(__dirname, '../public/uploads/banners');
 
@@ -33,17 +41,14 @@ router.get('/categories', async (req, res) => {
     }
 });
 
-// Banner Schema
-const bannerSchema = new mongoose.Schema({
-    path: { type: String, required: true },
-    uploadedAt: { type: Date, default: Date.now }
-});
-const Banner = mongoose.models.Banner || mongoose.model('Banner', bannerSchema, 'banners');
+function bannersCol() {
+    return mongoose.connection.db.collection('banners');
+}
 
 // GET /api/home/banners - list all banner images for home page (from MongoDB)
 router.get('/banners', async (req, res) => {
     try {
-        const banners = await Banner.find().sort({ uploadedAt: -1 });
+        const banners = await bannersCol().find({}).sort({ uploadedAt: -1 }).toArray();
         res.json({ banners });
     } catch (err) {
         res.status(500).json({ error: 'Unable to fetch banners', details: err.message });
@@ -246,12 +251,72 @@ router.get('/search', async (req, res) => {
 });
 
 // FAVORITES: User-specific in per-user DB
-// Helper to get user DB from header x-user-db or query
 function getUserDb(client, req) {
-    const name = req.header('x-user-db') || req.query.userDb;
+    const name = getUserDbName(req);
     if (!name) return null;
     return client.db(name);
 }
+
+// RECENT SEARCHES (user-specific)
+function normalizeSearchTerm(t) {
+    return String(t || '').trim().replace(/\\s+/g, ' ');
+}
+
+// GET /api/home/recent-searches - list last 3 searches
+router.get('/recent-searches', async (req, res) => {
+    try {
+        const client = mongoose.connection.getClient();
+        const userDb = getUserDb(client, req);
+        if (!userDb) return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
+        const col = userDb.collection('recent_searches');
+        const docs = await col.find({}).sort({ updatedAt: -1 }).limit(3).toArray();
+        res.json({ terms: docs.map(d => d.term) });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch recent searches', details: err.message });
+    }
+});
+
+// POST /api/home/recent-searches {term} - upsert term and keep max 3
+router.post('/recent-searches', express.json(), async (req, res) => {
+    try {
+        const term = normalizeSearchTerm(req.body.term);
+        if (!term) return res.status(400).json({ error: 'term is required' });
+        const client = mongoose.connection.getClient();
+        const userDb = getUserDb(client, req);
+        if (!userDb) return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
+        const col = userDb.collection('recent_searches');
+        const now = new Date();
+        const key = term.toLowerCase();
+        await col.updateOne(
+            { key },
+            { $set: { key, term, updatedAt: now }, $setOnInsert: { createdAt: now } },
+            { upsert: true }
+        );
+        // keep only 3 most recent
+        const all = await col.find({}).sort({ updatedAt: -1 }).toArray();
+        if (all.length > 3) {
+            const toDelete = all.slice(3).map(d => d._id);
+            await col.deleteMany({ _id: { $in: toDelete } });
+        }
+        const docs = await col.find({}).sort({ updatedAt: -1 }).limit(3).toArray();
+        res.json({ ok: true, terms: docs.map(d => d.term) });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to save recent search', details: err.message });
+    }
+});
+
+// DELETE /api/home/recent-searches - clear all
+router.delete('/recent-searches', async (req, res) => {
+    try {
+        const client = mongoose.connection.getClient();
+        const userDb = getUserDb(client, req);
+        if (!userDb) return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
+        await userDb.collection('recent_searches').deleteMany({});
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to clear recent searches', details: err.message });
+    }
+});
 
 // POST /api/home/favorites - add a product to favorites (user-specific)
 router.post('/favorites', async (req, res) => {
@@ -430,7 +495,7 @@ router.post('/orders', async (req, res) => {
             return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
         }
 
-        const userDbName = req.header('x-user-db');
+        const userDbName = getUserDbName(req);
         const paymentMethod = req.body.paymentMethod || 'Not specified';
 
         const cartCol = userDb.collection('cart');
@@ -503,7 +568,7 @@ router.get('/profile/debug', async (req, res) => {
             return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
         }
         
-        const userDbName = req.header('x-user-db');
+        const userDbName = getUserDbName(req);
         const profileCol = userDb.collection('profile');
         
         // Get database name
@@ -542,7 +607,7 @@ router.delete('/profile/clear', async (req, res) => {
             return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
         }
         
-        const userDbName = req.header('x-user-db');
+        const userDbName = getUserDbName(req);
         const profileCol = userDb.collection('profile');
         
         // Delete all profile documents
@@ -568,7 +633,7 @@ router.post('/profile/fix', async (req, res) => {
             return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
         }
         
-        const userDbName = req.header('x-user-db');
+        const userDbName = getUserDbName(req);
         const profileCol = userDb.collection('profile');
         
         // Get all profiles
@@ -607,7 +672,7 @@ router.post('/profile/merge', async (req, res) => {
             return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
         }
         
-        const userDbName = req.header('x-user-db');
+        const userDbName = getUserDbName(req);
         const profileCol = userDb.collection('profile');
         
         // Get all profiles
@@ -730,7 +795,7 @@ router.get('/profile', async (req, res) => {
             return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
         }
         
-        const userDbName = req.header('x-user-db');
+        const userDbName = getUserDbName(req);
         console.log('Looking for profile for userDbName:', userDbName);
         
         // Use the user-specific database collection
@@ -805,7 +870,7 @@ router.post('/profile/address', async (req, res) => {
             return res.status(400).json({ error: 'Missing required address fields' });
         }
         
-        const userDbName = req.header('x-user-db');
+        const userDbName = getUserDbName(req);
         console.log('Processing address for userDbName:', userDbName);
         
         // Use the user-specific database collection
@@ -885,7 +950,7 @@ router.put('/profile', async (req, res) => {
         if (!userDb) return res.status(400).json({ error: 'Missing user DB (x-user-db)' });
         
         const { username, phone } = req.body;
-        const userId = req.header('x-user-db');
+        const userId = getUserDbName(req);
         
         const profileCol = userDb.collection('profile');
         
@@ -908,6 +973,17 @@ router.put('/profile', async (req, res) => {
     } catch (err) {
         console.error('Error updating profile:', err);
         res.status(500).json({ error: 'Failed to update profile', details: err.message });
+    }
+});
+
+router.get('/branding', async (req, res) => {
+    try {
+        const data = await mergeBranding();
+        res.set('Cache-Control', 'public, max-age=60');
+        res.json(data);
+    } catch (err) {
+        console.error('GET /branding:', err);
+        res.status(500).json({ error: 'Failed to load branding' });
     }
 });
 

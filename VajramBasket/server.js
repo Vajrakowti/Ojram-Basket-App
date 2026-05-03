@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'pages', 'login.html'));
+    res.sendFile(path.join(__dirname, 'public', 'pages', 'splash.html'));
 });
 
 // Test API page
@@ -23,7 +23,9 @@ app.get('/test-api', (req, res) => {
 const adminback = require('./routes/adminback');
 const homeback = require('./routes/homeback');
 const userback = require('./routes/userback');
+const brandingAdmin = require('./routes/brandingAdmin');
 app.use('/api/admin', adminback);
+app.use('/api/admin/branding', brandingAdmin);
 app.use('/api/home', homeback);
 app.use('/api/user', userback);
 
@@ -40,7 +42,7 @@ app.use('/api/*', (req, res) => {
 });
 
 // Start server
-const PORT = process.env.MAIN_PORT || 4000;
+const PORT = process.env.MAIN_PORT || 6000;
 app.listen(PORT, () => {
     console.log(`Main server is running on port ${PORT}`);
 });
