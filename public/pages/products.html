@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products - VajramBasket Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #ffffff; }
+        .product-list-card {
+            border-radius: 22px;
+            box-shadow: 0 4px 32px rgba(108,99,255,0.10);
+            border: none;
+            margin-top: 2rem;
+        }
+        .product-list-card th { color: #6c63ff; }
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+        .add-product-btn {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 2000;
+            background: linear-gradient(90deg, #6c63ff 0%, #48c6ef 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            box-shadow: 0 4px 24px rgba(108,99,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-dialog { display: flex; align-items: center; min-height: 100vh; }
+        .product-form-card {
+            border-radius: 22px;
+            box-shadow: 0 4px 32px rgba(108,99,255,0.10);
+            border: none;
+        }
+        .product-form-card .card-header {
+            background: linear-gradient(90deg, #6c63ff 0%, #48c6ef 100%);
+            color: #fff;
+            border-radius: 22px 22px 0 0;
+            text-align: center;
+        }
+        .product-form-card .card-body {
+            padding: 2rem;
+        }
+        .product-form-card .form-control {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center mt-4" id="categoryTitle"></h3>
+        <div class="card product-list-card">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">Product List</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Weight</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content product-form-card">
+          <div class="card-header">
+            <h4 class="mb-0">Add Product</h4>
+          </div>
+          <div class="card-body">
+            <form id="productForm">
+              <div class="mb-3"><label for="productImage" class="form-label">Product Image</label><input type="file" class="form-control" id="productImage" name="image" accept="image/*" required></div>
+              <div class="mb-3"><label for="productName" class="form-label">Product Name</label><input type="text" class="form-control" id="productName" name="name" required></div>
+              <div class="mb-3"><label for="productDescription" class="form-label">Product Description (Optional)</label><textarea class="form-control" id="productDescription" name="description"></textarea></div>
+              <div class="mb-3"><label for="productPrice" class="form-label">Price (₹)</label><input type="number" class="form-control" id="productPrice" name="price" required></div>
+              <div class="row"><div class="col"><label for="productWeight" class="form-label">Weight (Optional)</label><input type="number" class="form-control" id="productWeight" name="weight"></div><div class="col"><label class="form-label invisible">Unit</label><select class="form-select" id="weightUnit" name="weightUnit"><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="l">l</option></select></div></div>
+              <button type="submit" class="btn btn-primary w-100 mt-3">Add Product</button>
+              <div id="productMsg" class="mt-2"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content product-form-card">
+          <div class="card-header">
+            <h4 class="mb-0">Edit Product</h4>
+          </div>
+          <div class="card-body">
+            <form id="editProductForm">
+              <input type="hidden" id="editProductId">
+              <div class="mb-3">
+                <label class="form-label">Current Image</label>
+                <img id="currentProductImage" class="d-block mb-2" style="max-width: 100px; height: auto;">
+                <label for="editProductImage" class="form-label">Change Image (Optional)</label>
+                <input type="file" class="form-control" id="editProductImage" name="image" accept="image/*">
+              </div>
+              <div class="mb-3">
+                <label for="editProductName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="editProductName" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="editProductDescription" class="form-label">Product Description (Optional)</label>
+                <textarea class="form-control" id="editProductDescription" name="description"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="editProductPrice" class="form-label">Price (₹)</label>
+                <input type="number" class="form-control" id="editProductPrice" name="price" required>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <label for="editProductWeight" class="form-label">Weight (Optional)</label>
+                  <input type="number" class="form-control" id="editProductWeight" name="weight">
+                </div>
+                <div class="col">
+                  <label class="form-label invisible">Unit</label>
+                  <select class="form-select" id="editWeightUnit" name="weightUnit">
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="ml">ml</option>
+                    <option value="l">l</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 mt-3">Update Product</button>
+              <div id="editProductMsg" class="mt-2"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="add-product-btn" id="openAddProductModal" title="Add Product"><i class="fas fa-plus"></i></button>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
+        const editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+        document.getElementById('openAddProductModal').onclick = () => addProductModal.show();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryName = urlParams.get('category');
+        document.getElementById('categoryTitle').textContent = `Products in ${categoryName}`;
+
+        const productForm = document.getElementById('productForm');
+        const editProductForm = document.getElementById('editProductForm');
+        const productMsg = document.getElementById('productMsg');
+        const editProductMsg = document.getElementById('editProductMsg');
+
+        async function loadProducts() {
+            const res = await fetch(`/api/admin/products/${categoryName}`);
+            const products = await res.json();
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            products.forEach(p => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${p.image}" class="product-image"></td>
+                    <td>${p.name}</td>
+                    <td>₹${p.price}</td>
+                    <td>${p.weight != null ? `${p.weight}${p.weightUnit}` : 'NA'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-2" onclick="editProduct('${p._id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p._id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                productList.appendChild(row);
+            });
+        }
+
+        async function editProduct(id) {
+            try {
+                const res = await fetch(`/api/admin/products/${categoryName}/${id}`);
+                const product = await res.json();
+                
+                document.getElementById('editProductId').value = id;
+                document.getElementById('currentProductImage').src = product.image;
+                document.getElementById('editProductName').value = product.name;
+                document.getElementById('editProductDescription').value = product.description || '';
+                document.getElementById('editProductPrice').value = product.price;
+                
+                if (product.weight) {
+                    document.getElementById('editProductWeight').value = product.weight;
+                    document.getElementById('editWeightUnit').value = product.weightUnit;
+                } else {
+                    document.getElementById('editProductWeight').value = '';
+                }
+                
+                editProductModal.show();
+            } catch (err) {
+                alert('Error loading product details');
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure?')) return;
+            await fetch(`/api/admin/products/${categoryName}/${id}`, { method: 'DELETE' });
+            loadProducts();
+        }
+
+        productForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            // If weight is not entered, do not send weight or weightUnit
+            if (!formData.get('weight')) {
+                formData.delete('weight');
+                formData.delete('weightUnit');
+            }
+            try {
+                const res = await fetch(`/api/admin/products/${categoryName}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (res.ok) {
+                    productMsg.textContent = 'Product added!';
+                    productMsg.className = 'text-success';
+                    this.reset();
+                    addProductModal.hide();
+                    loadProducts();
+                } else {
+                    const err = await res.json();
+                    productMsg.textContent = err.error || 'Error';
+                    productMsg.className = 'text-danger';
+                }
+            } catch (err) {
+                productMsg.textContent = 'Error adding product';
+                productMsg.className = 'text-danger';
+            }
+        });
+
+        editProductForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const productId = document.getElementById('editProductId').value;
+            
+            // If no new image is selected, remove the image field
+            if (!formData.get('image').size) {
+                formData.delete('image');
+            }
+            
+            // If weight is not entered, do not send weight or weightUnit
+            if (!formData.get('weight')) {
+                formData.delete('weight');
+                formData.delete('weightUnit');
+            }
+
+            try {
+                const res = await fetch(`/api/admin/products/${categoryName}/${productId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    editProductMsg.textContent = 'Product updated successfully!';
+                    editProductMsg.className = 'text-success';
+                    setTimeout(() => {
+                        editProductModal.hide();
+                        loadProducts();
+                    }, 1000);
+                } else {
+                    const err = await res.json();
+                    editProductMsg.textContent = err.error || 'Error updating product';
+                    editProductMsg.className = 'text-danger';
+                }
+            } catch (err) {
+                editProductMsg.textContent = 'Error updating product';
+                editProductMsg.className = 'text-danger';
+            }
+        });
+        
+        loadProducts();
+    </script>
+</body>
+</html> 

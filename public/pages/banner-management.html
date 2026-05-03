@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banner Management - VajramBasket Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: flex-start;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header-logo img {
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .offcanvas-header.flex-column.align-items-start {
+            align-items: center !important;
+            justify-content: center;
+            padding-top: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .offcanvas-header img {
+            display: block;
+            margin: 0 auto;
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+        }
+        .offcanvas-body {
+            padding-top: 24px;
+        }
+        .offcanvas .nav-link {
+            font-size: 1.1rem;
+            padding: 12px 0;
+            color: #333;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .offcanvas .nav-link:hover, .offcanvas .nav-link.active {
+            background: #f3f3fa;
+            color: #6c63ff;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom {
+                padding: 0.5rem 0.5rem;
+            }
+            .header-logo img {
+                height: 48px;
+                width: auto;
+            }
+        }
+        body {
+            background: linear-gradient(180deg, #edf6ff 0%, #f4f8fb 35%, #f8fafc 100%);
+        }
+        .admin-main-content {
+            padding-bottom: 36px;
+        }
+        .upload-panel {
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(44, 98, 170, 0.12);
+        }
+        .upload-panel .card-header {
+            border: none;
+            background: linear-gradient(135deg, #2f8f66 0%, #3aa2c7 100%);
+            color: #fff;
+            padding: 1rem 1.1rem;
+        }
+        .upload-panel .card-body {
+            background: #fff;
+            padding: 1.1rem;
+        }
+        .btn-upload {
+            background: linear-gradient(135deg, #2f8f66 0%, #2c9a7e 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-weight: 600;
+        }
+        .btn-upload:hover { color: #fff; opacity: 0.95; }
+        .uploaded-title {
+            font-weight: 700;
+            color: #1f3a57;
+            margin-bottom: 10px;
+        }
+        .banner-card {
+            position: relative;
+            margin-bottom: 16px;
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.09);
+        }
+        .banner-card img {
+            width: 100%;
+            height: 230px;
+            object-fit: contain;
+            background: #fff;
+        }
+        .color-swatch {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid #d0d7de;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        .delete-banner-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .delete-banner-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: scale(1.1);
+        }
+        .banner-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 8px 10px;
+            border-top: 1px solid #edf0f3;
+        }
+        .banner-meta small { color: #6b7280; }
+        .top-help {
+            color: #5f6c7b;
+            font-size: 0.9rem;
+        }
+        #bannerToast {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1200;
+            width: min(92vw, 460px);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.16);
+            display: none;
+        }
+        #bannerLoader {
+            position: fixed;
+            inset: 0;
+            z-index: 1190;
+            background: rgba(255, 255, 255, 0.68);
+            backdrop-filter: blur(1px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #bannerLoader.show {
+            display: flex;
+        }
+        .loader-bubble {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.96);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+        }
+        .loader-spinner {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 4px solid #d7efe4;
+            border-top-color: #2f8f66;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            .banner-card img { height: 190px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="bannerToast" class="alert" role="status" aria-live="polite"></div>
+    <div id="bannerLoader" aria-hidden="true">
+        <div class="loader-bubble">
+            <div class="loader-spinner" role="status" aria-label="Loading"></div>
+        </div>
+    </div>
+
+    <!-- Header with Back Button (no side nav, no home icon) -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" onclick="window.location.href='admin.html'" title="Back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-logo">
+                <img src="/Logo.jpg" alt="VV Farms Logo">
+            </div>
+        </div>
+        <div class="header-right"></div>
+    </nav>
+
+    <!-- Banner Upload Section -->
+    <div class="container mt-4 admin-main-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4 upload-panel">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-images me-2"></i>Upload Banner Images</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="bannerForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input type="file" class="form-control" id="bannerImages" name="banners" accept="image/*" multiple required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bannerBgColor" class="form-label">Top background color (optional)</label>
+                                <input type="color" class="form-control form-control-color" id="bannerBgColor" name="bgColor" value="#4b86e8">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="useBannerBgColor">
+                                    <label class="form-check-label" for="useBannerBgColor">Apply this color for uploaded banners</label>
+                                </div>
+                                <div class="form-text">If unchecked, user home top background stays white for those banners.</div>
+                            </div>
+                            <button type="submit" class="btn btn-upload"><i class="fas fa-cloud-upload-alt me-2"></i>Upload banners</button>
+                        </form>
+                        <div class="top-help mt-3">For best results, upload wide banner images (example: 1600x700). Banner is auto-fitted on home page without cropping.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Uploaded Banners -->
+        <div class="row">
+            <div class="col-12">
+                <h5 class="uploaded-title">Uploaded Banners</h5>
+                <div id="uploadedBanners" class="row"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/header-logo.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Banner upload logic
+            const bannerForm = document.getElementById('bannerForm');
+            const bannerImages = document.getElementById('bannerImages');
+            const bannerBgColor = document.getElementById('bannerBgColor');
+            const useBannerBgColor = document.getElementById('useBannerBgColor');
+            const uploadedBanners = document.getElementById('uploadedBanners');
+            const bannerToast = document.getElementById('bannerToast');
+            const bannerLoader = document.getElementById('bannerLoader');
+            let toastTimer = null;
+
+            function showLoader() {
+                bannerLoader.classList.add('show');
+            }
+            function hideLoader() {
+                bannerLoader.classList.remove('show');
+            }
+            function showToast(msg, ok) {
+                bannerToast.textContent = msg;
+                bannerToast.className = 'alert ' + (ok ? 'alert-success' : 'alert-danger');
+                bannerToast.style.display = 'block';
+                if (toastTimer) clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    bannerToast.style.display = 'none';
+                }, 3000);
+            }
+
+            useBannerBgColor.checked = true;
+
+            bannerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                showLoader();
+                const formData = new FormData();
+                for (let i = 0; i < bannerImages.files.length; i++) {
+                    formData.append('banners', bannerImages.files[i]);
+                }
+                const chosenBg = (useBannerBgColor && useBannerBgColor.checked && bannerBgColor && bannerBgColor.value)
+                    ? bannerBgColor.value
+                    : '';
+                formData.append('bgColor', chosenBg);
+                try {
+                    const response = await fetch('/api/admin/banners', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (response.ok) {
+                        showToast('Banners uploaded successfully.', true);
+                        bannerForm.reset();
+                        useBannerBgColor.checked = true;
+                        loadBanners();
+                    } else {
+                        showToast('Error uploading banners.', false);
+                    }
+                } catch (err) {
+                    showToast('Error uploading banners.', false);
+                } finally {
+                    hideLoader();
+                }
+            });
+
+            async function loadBanners() {
+                try {
+                    const res = await fetch('/api/admin/banners');
+                    const data = await res.json();
+                    uploadedBanners.innerHTML = '';
+                    if (data.banners.length === 0) {
+                        uploadedBanners.innerHTML = '<div class="col-12"><p class="text-muted">No banners uploaded yet.</p></div>';
+                    } else {
+                        data.banners.forEach(banner => {
+                            const url = banner.path;
+                            const id = banner._id;
+                            const col = document.createElement('div');
+                            col.className = 'col-md-4';
+                            const card = document.createElement('div');
+                            card.className = 'card banner-card';
+                            const colorLabel = banner.bgColor
+                                ? `<small><span class="color-swatch" style="background:${banner.bgColor}"></span>${banner.bgColor}</small>`
+                                : `<small>Default top: white</small>`;
+                            card.innerHTML = `
+                                <img src="${url}" alt="Banner">
+                                <div class="banner-meta">${colorLabel}<small>${new Date(banner.uploadedAt || Date.now()).toLocaleDateString()}</small></div>
+                                <button class="delete-banner-btn" onclick="deleteBanner('${id}', this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            `;
+                            col.appendChild(card);
+                            uploadedBanners.appendChild(col);
+                        });
+                    }
+                } catch (err) {
+                    uploadedBanners.innerHTML = '<div class="col-12"><span class="text-danger">Could not load banners.</span></div>';
+                }
+            }
+
+            window.deleteBanner = async function(bannerId, btn) {
+                if (confirm('Are you sure you want to delete this banner?')) {
+                    showLoader();
+                    try {
+                        const resp = await fetch(`/api/admin/banners/${bannerId}`, { method: 'DELETE' });
+                        if (resp.ok) {
+                            btn.closest('.col-md-4').remove();
+                            showToast('Banner deleted successfully.', true);
+                            // Check if no banners left
+                            if (uploadedBanners.querySelectorAll('.col-md-4').length === 0) {
+                                uploadedBanners.innerHTML = '<div class="col-12"><p class="text-muted">No banners uploaded yet.</p></div>';
+                            }
+                        } else {
+                            showToast('Error deleting banner.', false);
+                        }
+                    } catch (err) {
+                        showToast('Error deleting banner.', false);
+                    } finally {
+                        hideLoader();
+                    }
+                }
+            };
+
+            loadBanners();
+        });
+    </script>
+</body>
+</html>
+

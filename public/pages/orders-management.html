@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Management - VajramBasket Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: flex-start;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .header-logo img {
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .header-icon {
+            font-size: 1.5rem;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .offcanvas-header.flex-column.align-items-start {
+            align-items: center !important;
+            justify-content: center;
+            padding-top: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .offcanvas-header img {
+            display: block;
+            margin: 0 auto;
+            height: 64px;
+            width: auto;
+            object-fit: contain;
+        }
+        .offcanvas-body {
+            padding-top: 24px;
+        }
+        .offcanvas .nav-link {
+            font-size: 1.1rem;
+            padding: 12px 0;
+            color: #333;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .offcanvas .nav-link:hover, .offcanvas .nav-link.active {
+            background: #f3f3fa;
+            color: #6c63ff;
+        }
+        @media (max-width: 768px) {
+            .navbar-custom {
+                padding: 0.5rem 0.5rem;
+            }
+            .header-logo img {
+                height: 48px;
+                width: auto;
+            }
+        }
+        body {
+            background: #f8f9fa;
+        }
+        .admin-main-content {
+            padding-bottom: 30px;
+        }
+        .order-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .order-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .order-user-info {
+            flex: 1;
+        }
+        .order-user-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 4px;
+        }
+        .order-user-phone {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .order-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 20px;
+            text-decoration: none;
+        }
+        .action-icon.phone {
+            background: #4caf50;
+            color: white;
+        }
+        .action-icon.phone:hover {
+            background: #45a049;
+            transform: scale(1.1);
+        }
+        .action-icon.whatsapp {
+            background: #25d366;
+            color: white;
+        }
+        .action-icon.whatsapp:hover {
+            background: #20ba5a;
+            transform: scale(1.1);
+        }
+        .order-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+        .view-completed-btn {
+            background: linear-gradient(135deg, #ff5207 0%, #ffc107 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+        .view-completed-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .view-completed-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        .order-items {
+            margin-top: 12px;
+        }
+        .order-items-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .order-items-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .order-item-badge {
+            background: #f0f0f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+        .order-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+        .order-date {
+            font-size: 12px;
+            color: #999;
+        }
+        .order-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+        }
+        .empty-orders {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .empty-orders i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 768px) {
+            .order-card {
+                padding: 16px;
+            }
+            .order-user-name {
+                font-size: 16px;
+            }
+            .action-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Back Button (no side nav, no home icon) -->
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" onclick="window.location.href='admin.html'" title="Back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-logo">
+                <img src="/Logo.jpg" alt="VV Farms Logo">
+            </div>
+        </div>
+        <div class="header-right"></div>
+    </nav>
+
+    <div class="container mt-4 admin-main-content">
+        <div class="page-header">
+            <h4 class="mb-0">All Orders</h4>
+            <button class="view-completed-btn" onclick="window.location.href='completed-orders.html'">
+                <i class="fas fa-check-circle"></i>View Completed Orders
+            </button>
+        </div>
+        <div id="ordersContainer">
+            <!-- Orders will be loaded here -->
+        </div>
+    </div>
+
+    <script src="/js/header-logo.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let lastOrderCount = 0;
+        let refreshInterval = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            // Auto-refresh every 5 seconds
+            refreshInterval = setInterval(loadOrders, 5000);
+        });
+
+        // Stop auto-refresh when page is hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+            } else {
+                if (!refreshInterval) {
+                    loadOrders();
+                    refreshInterval = setInterval(loadOrders, 5000);
+                }
+            }
+        });
+
+        // Calculate order ID based on date
+        function calculateOrderId(orders) {
+            // Group orders by date
+            const ordersByDate = {};
+            orders.forEach(order => {
+                const orderDate = new Date(order.placedAt);
+                const dateKey = orderDate.toISOString().split('T')[0]; // YYYY-MM-DD
+                
+                if (!ordersByDate[dateKey]) {
+                    ordersByDate[dateKey] = [];
+                }
+                ordersByDate[dateKey].push(order);
+            });
+            
+            // Calculate order ID for each order
+            const orderIdMap = {};
+            Object.keys(ordersByDate).sort().forEach(dateKey => {
+                const dayOrders = ordersByDate[dateKey].sort((a, b) => 
+                    new Date(a.placedAt) - new Date(b.placedAt)
+                );
+                dayOrders.forEach((order, index) => {
+                    const orderDate = new Date(order.placedAt);
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const month = monthNames[orderDate.getMonth()];
+                    const day = orderDate.getDate();
+                    orderIdMap[order._id] = `${month} ${day} - Order ${index + 1}`;
+                });
+            });
+            
+            return orderIdMap;
+        }
+
+        async function loadOrders() {
+            try {
+                // First fetch all orders (new + completed) to calculate consistent order IDs
+                const allOrdersResponse = await fetch('/api/admin/orders/all');
+                const allOrders = await allOrdersResponse.json();
+                
+                // Calculate order IDs based on ALL orders (new + completed)
+                const orderIdMap = calculateOrderId(allOrders);
+                
+                // Now fetch only new orders to display
+                const response = await fetch('/api/admin/orders');
+                const orders = await response.json();
+                
+                const container = document.getElementById('ordersContainer');
+                
+                // Save current order count to localStorage (admin has seen these orders)
+                localStorage.setItem('lastSeenOrderCount', orders.length.toString());
+                
+                // Check if new orders arrived
+                if (orders.length > lastOrderCount && lastOrderCount > 0) {
+                    // New orders detected - could show notification here
+                    console.log(`New orders detected: ${orders.length - lastOrderCount} new order(s)`);
+                }
+                lastOrderCount = orders.length;
+                
+                if (orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-orders">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h5>No orders yet</h5>
+                            <p>Orders will appear here when customers place them.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                orders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'order-card';
+                    orderCard.onclick = () => {
+                        window.location.href = `order-detail.html?id=${order._id}`;
+                    };
+                    
+                    // Format date
+                    const orderDate = new Date(order.placedAt);
+                    const formattedDate = orderDate.toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Get item names
+                    const itemNames = order.items.map(item => item.name).join(', ');
+                    
+                    // Format phone number for links
+                    const phone = order.user.phone;
+                    const whatsappLink = `https://wa.me/91${phone}`;
+                    const phoneLink = `tel:${phone}`;
+                    
+                    // Get order ID
+                    const orderId = orderIdMap[order._id] || 'Order';
+                    
+                    orderCard.innerHTML = `
+                        <div class="order-header">
+                            <div class="order-user-info">
+                                <div class="order-id">${orderId}</div>
+                                <div class="order-user-name">Order from ${order.user.username}</div>
+                                <div class="order-user-phone">
+                                    <i class="fas fa-phone me-1"></i>${phone}
+                                </div>
+                            </div>
+                            <div class="order-actions" onclick="event.stopPropagation()">
+                                <a href="${phoneLink}" class="action-icon phone" title="Call">
+                                    <i class="fas fa-phone"></i>
+                                </a>
+                                <a href="${whatsappLink}" target="_blank" class="action-icon whatsapp" title="WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            <div class="order-items-title">Items</div>
+                            <div class="order-items-list">
+                                ${order.items.map(item => `
+                                    <span class="order-item-badge">${item.name} (${item.quantity}x)</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="order-meta">
+                            <div class="order-date">
+                                <i class="fas fa-clock me-1"></i>${formattedDate}
+                            </div>
+                            <div class="order-total">₹${order.totalAmount}</div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(orderCard);
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('ordersContainer').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Error loading orders. Please try again.
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+

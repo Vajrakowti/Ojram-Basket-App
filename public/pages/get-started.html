@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Get Started — VV Farms</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { min-height: 100%; }
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background-color: #f6f7f4;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #1a2b23;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 2rem 1.25rem 2.5rem;
+        }
+        .deco {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.1;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Ctext x='100' y='72' text-anchor='middle' font-size='56' fill='%232d6a4f' font-family='Georgia' font-weight='bold'%3EVV%3C/text%3E%3C/svg%3E") center 12% / 200px repeat;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            text-align: center;
+            max-width: 420px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .logo-top { width: min(42vw, 150px); margin-bottom: 1.1rem; }
+        .logo-top img { width: 100%; height: auto; border-radius: 18px; object-fit: contain; }
+        h1 { font-size: 1.65rem; font-weight: 700; color: #1a2b23; margin-bottom: 0.5rem; }
+        .tagline { font-size: 0.95rem; line-height: 1.55; color: #2d6a4f; margin-bottom: 2rem; max-width: 340px; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 320px;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #2d6a4f 0%, #1a4d3a 100%);
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(26, 77, 58, 0.35);
+        }
+        .btn:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <div class="deco" id="gsDeco" aria-hidden="true"></div>
+    <div class="content">
+        <div class="logo-top">
+            <img id="gsLogo" src="/Logo.jpg" alt="VV Farms" />
+        </div>
+        <h1 id="gsTitle">VV Farms</h1>
+        <p class="tagline" id="gsTagline">Order fresh pork, chicken &amp; mutton — raw cuts and ready curries — delivered to your door.</p>
+        <a class="btn" href="/pages/auth.html">Get started <span aria-hidden="true">→</span></a>
+    </div>
+    <script>
+        fetch('/api/home/branding')
+            .then(function (r) { return r.json(); })
+            .then(function (b) {
+                if (b.appName) document.getElementById('gsTitle').textContent = b.appName;
+                var g = b.getStarted || {};
+                if (g.logoUrl) document.getElementById('gsLogo').src = g.logoUrl;
+                var tEl = document.getElementById('gsTitle');
+                var tagEl = document.getElementById('gsTagline');
+                if (g.tagline) tagEl.textContent = g.tagline;
+                if (g.backgroundColor) document.body.style.backgroundColor = g.backgroundColor;
+                if (g.backgroundImageUrl) {
+                    document.body.style.backgroundImage = 'url("' + g.backgroundImageUrl.replace(/"/g, '\\"') + '")';
+                }
+                if (g.titleColor) tEl.style.color = g.titleColor;
+                if (g.titleFontSize) tEl.style.fontSize = g.titleFontSize;
+                if (g.taglineColor) tagEl.style.color = g.taglineColor;
+                if (g.taglineFontSize) tagEl.style.fontSize = g.taglineFontSize;
+            })
+            .catch(function () {});
+    </script>
+</body>
+</html>

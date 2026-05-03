@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branding — VV Farms Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #f0f2ed; padding-bottom: 2rem; }
+        .navbar-brand { font-size: 1.05rem; }
+        #brandToast {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1090;
+            width: min(92vw, 440px);
+            margin-top: 0.65rem;
+            border-radius: 14px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            text-align: center;
+            font-weight: 500;
+        }
+        #saveOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.75);
+            z-index: 1085;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(1px);
+        }
+        #saveOverlay.visible { display: flex; }
+        .overlay-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.14);
+            text-align: center;
+            min-width: 190px;
+        }
+        .overlay-card .spinner-border {
+            width: 2.2rem;
+            height: 2.2rem;
+            color: #1a4d3a;
+        }
+        .overlay-card p {
+            margin: 0.55rem 0 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #274f3e;
+        }
+        .accordion-brand {
+            --bs-accordion-btn-bg: #fff;
+            --bs-accordion-active-bg: #f8faf7;
+            --bs-accordion-btn-focus-box-shadow: 0 0 0 0.2rem rgba(45, 106, 79, 0.15);
+            border-radius: 16px !important;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+        .accordion-brand .accordion-item {
+            border: none;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .accordion-brand .accordion-item:last-child { border-bottom: none; }
+        .accordion-brand .accordion-button {
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 1rem 1.15rem;
+        }
+        .accordion-brand .accordion-button:not(.collapsed) {
+            color: #1a4d3a;
+            background: #f4f7f2;
+        }
+        .accordion-brand .accordion-body {
+            padding: 1.15rem 1.25rem 1.35rem;
+            background: #fff;
+        }
+        .preview-img { max-height: 100px; max-width: 100%; border-radius: 12px; object-fit: contain; }
+        .brand-ph-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            border: 2px dashed #c5d1c9;
+            object-fit: cover;
+            background: #fafbf9;
+            flex-shrink: 0;
+        }
+        .brand-ph-lg { width: 72px; height: 72px; }
+        @media (max-width: 575.98px) {
+            .brand-ph-lg { width: 56px; height: 56px; }
+        }
+        .hint { font-size: 0.8rem; color: #6c757d; }
+        .size-note { font-size: 0.78rem; color: #6b7280; }
+    </style>
+</head>
+<body>
+    <div id="brandToast" class="alert d-none py-3 px-4" role="status" aria-live="polite"></div>
+    <div id="saveOverlay" aria-hidden="true">
+        <div class="overlay-card">
+            <div class="spinner-border" role="status" aria-label="Saving"></div>
+            <p>Saving changes...</p>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-light bg-white shadow-sm mb-3">
+        <div class="container">
+            <a class="navbar-brand fw-semibold" href="admin.html"><i class="fas fa-arrow-left me-2"></i>Branding</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="h5 mb-3 fw-semibold">App &amp; logos</h1>
+
+        <div class="accordion accordion-flush accordion-brand" id="brandAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accAppName" aria-expanded="false" aria-controls="accAppName">
+                        <i class="fas fa-signature me-2 text-success"></i>App name
+                    </button>
+                </h2>
+                <div id="accAppName" class="accordion-collapse collapse" data-bs-parent="#brandAccordion">
+                    <div class="accordion-body">
+                        <form id="formAppName" class="row g-2 align-items-end">
+                            <div class="col-12 col-md-8">
+                                <label class="form-label">Display name</label>
+                                <input type="text" class="form-control" name="appName" id="appName" placeholder="VV Farms" />
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <button type="submit" class="btn btn-success w-100">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accSplash" aria-expanded="false" aria-controls="accSplash">
+                        <i class="fas fa-image me-2 text-success"></i>Splash screen
+                    </button>
+                </h2>
+                <div id="accSplash" class="accordion-collapse collapse" data-bs-parent="#brandAccordion">
+                    <div class="accordion-body">
+                        <form id="formSplash" enctype="multipart/form-data">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Logo image</label>
+                                    <input type="file" class="form-control mb-2" name="logo" accept="image/*" />
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <img id="prevSplash" class="preview-img d-none" alt="Current splash logo" />
+                                        <img id="phSplash" class="brand-ph-img" alt="" width="100" height="100" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Duration (seconds)</label>
+                                    <input type="number" class="form-control" name="durationSec" id="splashDur" min="1" max="15" step="0.5" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Background color</label>
+                                    <input type="color" class="form-control form-control-color" name="backgroundColor" id="splashBg" />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Subtitle under title</label>
+                                    <input type="text" class="form-control" name="subtitle" id="splashSubtitle" placeholder="Fresh meat &amp; curries" />
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Title color</label>
+                                    <input type="color" class="form-control form-control-color" name="titleColor" id="splashTitleColor" />
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Title size (px)</label>
+                                    <input type="text" class="form-control px-input" name="titleFontSize" id="splashTitleSize" placeholder="34px" />
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Subtitle color</label>
+                                    <input type="color" class="form-control form-control-color" name="subtitleColor" id="splashSubColor" />
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Subtitle size (px)</label>
+                                    <input type="text" class="form-control px-input" name="subtitleFontSize" id="splashSubSize" placeholder="14px" />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label">Subtitle opacity (0–1)</label>
+                                    <input type="number" class="form-control" name="subtitleOpacity" id="splashSubOp" min="0" max="1" step="0.05" />
+                                </div>
+                                <div class="col-12"><p class="size-note mb-0">Use pixel values like 14px, 18px, 24px.</p></div>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-3">Save splash</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accGs" aria-expanded="false" aria-controls="accGs">
+                        <i class="fas fa-hand-sparkles me-2 text-success"></i>Get started page
+                    </button>
+                </h2>
+                <div id="accGs" class="accordion-collapse collapse" data-bs-parent="#brandAccordion">
+                    <div class="accordion-body">
+                        <form id="formGetStarted" enctype="multipart/form-data">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Logo</label>
+                                    <input type="file" class="form-control mb-2" name="logo" accept="image/*" />
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <img id="prevGsLogo" class="preview-img d-none" alt="Current get started logo" />
+                                        <img id="phGsLogo" class="brand-ph-img" alt="" width="100" height="100" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Background image (optional)</label>
+                                    <input type="file" class="form-control mb-2" name="background" accept="image/*" />
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <img id="prevGsBg" class="preview-img d-none" alt="Current get started background" />
+                                        <img id="phGsBg" class="brand-ph-img" alt="" width="100" height="100" />
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Tagline</label>
+                                    <textarea class="form-control" name="tagline" id="gsTagline" rows="2"></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Page background color</label>
+                                    <input type="color" class="form-control form-control-color" name="backgroundColor" id="gsBg" />
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label">Title color</label>
+                                    <input type="color" class="form-control form-control-color" name="titleColor" id="gsTitleColor" />
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label">Title size (px)</label>
+                                    <input type="text" class="form-control px-input" name="titleFontSize" id="gsTitleSize" placeholder="26px" />
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label">Tagline color</label>
+                                    <input type="color" class="form-control form-control-color" name="taglineColor" id="gsTagColor" />
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label">Tagline size (px)</label>
+                                    <input type="text" class="form-control px-input" name="taglineFontSize" id="gsTagSize" placeholder="15px" />
+                                </div>
+                                <div class="col-12"><p class="size-note mb-0">Use pixel values like 14px, 18px, 24px.</p></div>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-3">Save get started</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accAuth" aria-expanded="false" aria-controls="accAuth">
+                        <i class="fas fa-user-lock me-2 text-success"></i>Sign in / Sign up page
+                    </button>
+                </h2>
+                <div id="accAuth" class="accordion-collapse collapse" data-bs-parent="#brandAccordion">
+                    <div class="accordion-body">
+                        <form id="formAuth" enctype="multipart/form-data">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Top logo (optional)</label>
+                                    <input type="file" class="form-control mb-2" name="logo" accept="image/*" />
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <img id="prevAuthLogo" class="preview-img d-none" alt="Current auth logo" />
+                                        <img id="phAuthLogo" class="brand-ph-img" alt="" width="100" height="100" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Page background</label>
+                                    <input type="color" class="form-control form-control-color" name="pageBackground" id="authPageBg" />
+                                </div>
+                                <div class="col-12"><p class="hint mb-0 fw-semibold text-dark">Brand title (under logo)</p></div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Title color</label>
+                                    <input type="color" class="form-control form-control-color" name="brandTitleColor" id="authBrandTitleColor" />
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Title size (px)</label>
+                                    <input type="text" class="form-control px-input" name="brandTitleFontSize" id="authBrandTitleSize" placeholder="17px" />
+                                </div>
+                                <div class="col-12"><p class="hint mb-0 fw-semibold text-dark">Form labels</p></div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Label color</label>
+                                    <input type="color" class="form-control form-control-color" name="labelColor" id="authLabelColor" />
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Label size (px)</label>
+                                    <input type="text" class="form-control px-input" name="labelFontSize" id="authLabelSize" placeholder="13px" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Button background</label>
+                                    <input type="color" class="form-control form-control-color" name="buttonBg" id="authBtnBg" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Button text</label>
+                                    <input type="color" class="form-control form-control-color" name="buttonText" id="authBtnTx" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Tab / heading color</label>
+                                    <input type="color" class="form-control form-control-color" name="tabActiveColor" id="authTab" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Links</label>
+                                    <input type="color" class="form-control form-control-color" name="linkColor" id="authLink" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Card background (CSS, e.g. rgba)</label>
+                                    <input type="text" class="form-control" name="cardBg" id="authCard" placeholder="rgba(255,255,255,0.94)" />
+                                </div>
+                                <div class="col-12"><p class="size-note mb-0">Use pixel values like 14px, 18px, 24px.</p></div>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-3">Save auth page</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accHeader" aria-expanded="false" aria-controls="accHeader">
+                        <i class="fas fa-image me-2 text-success"></i>Header logo (after login)
+                    </button>
+                </h2>
+                <div id="accHeader" class="accordion-collapse collapse" data-bs-parent="#brandAccordion">
+                    <div class="accordion-body">
+                        <form id="formHeader" enctype="multipart/form-data">
+                            <input type="file" class="form-control mb-2" name="logo" accept="image/*" />
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <img id="prevHeader" class="preview-img d-none" alt="Current header logo" />
+                                <img id="phHeader" class="brand-ph-img" alt="" width="100" height="100" />
+                            </div>
+                            <button type="submit" class="btn btn-success mt-3">Save header logo</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/header-logo.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var brandToastTimer;
+        var savingCount = 0;
+
+        (function initBrandPlaceholders() {
+            var e = encodeURIComponent;
+            var svg = {
+                app: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect fill="#eef5f0" width="96" height="96" rx="12"/><text x="48" y="64" text-anchor="middle" font-size="28" font-weight="700" fill="#1a4d3a" font-family="system-ui,sans-serif">Aa</text></svg>',
+                splash: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect fill="#e3ebe6" width="120" height="120" rx="14"/><circle fill="#f4d06f" cx="78" cy="34" r="14"/><path fill="#7daf95" d="M16 92 L44 54 L64 70 L90 40 L104 92Z"/></svg>',
+                gs: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect fill="#f0f4f1" width="120" height="120" rx="14"/><path fill="#2d6a4f" d="M60 26 L74 54 L102 50 L80 70 L86 96 L60 80 L34 96 L40 70 L18 50 L46 54Z" opacity="0.88"/></svg>',
+                gsBg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8d4c8"/><stop offset="1" stop-color="#6a9b82"/></linearGradient></defs><rect fill="url(#g)" width="120" height="120" rx="14"/><path fill="#4a7c59" d="M0 78 Q30 52 60 62 T120 58 L120 120 L0 120Z" opacity="0.5"/></svg>',
+                auth: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect fill="#eef1ee" width="120" height="120" rx="14"/><rect fill="#dfe8e3" x="42" y="50" width="36" height="28" rx="5"/><path fill="#2d6a4f" d="M52 50 L52 40 Q60 30 68 40 L68 50"/></svg>',
+                header: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect fill="#e8ece9" width="120" height="120" rx="14"/><rect fill="#fff" x="22" y="30" width="76" height="60" rx="8" stroke="#2d6a4f" stroke-width="2"/><circle fill="#97b5a8" cx="60" cy="54" r="14"/></svg>'
+            };
+            function setSrc(id, key) {
+                var el = document.getElementById(id);
+                if (el) el.src = 'data:image/svg+xml,' + e(svg[key]);
+            }
+            setSrc('phAppName', 'app');
+            setSrc('phSplash', 'splash');
+            setSrc('phGsLogo', 'gs');
+            setSrc('phGsBg', 'gsBg');
+            setSrc('phAuthLogo', 'auth');
+            setSrc('phHeader', 'header');
+        })();
+
+        function showOverlay(show) {
+            var overlay = document.getElementById('saveOverlay');
+            if (show) {
+                savingCount += 1;
+                overlay.classList.add('visible');
+                return;
+            }
+            savingCount = Math.max(0, savingCount - 1);
+            if (savingCount === 0) overlay.classList.remove('visible');
+        }
+
+        function setPreviewOrPlaceholder(prevId, phId, url) {
+            var prev = document.getElementById(prevId);
+            var ph = document.getElementById(phId);
+            if (!prev || !ph) return;
+            if (url) {
+                prev.src = url;
+                prev.classList.remove('d-none');
+                ph.classList.add('d-none');
+            } else {
+                prev.classList.add('d-none');
+                ph.classList.remove('d-none');
+            }
+        }
+
+        function cssSizeToPx(value, fallbackPx) {
+            var v = String(value || '').trim().toLowerCase();
+            if (!v) return fallbackPx;
+            if (/^\d+(\.\d+)?px$/.test(v)) return v;
+            if (/^\d+(\.\d+)?$/.test(v)) return v + 'px';
+            if (/^\d+(\.\d+)?rem$/.test(v)) return (parseFloat(v) * 16).toFixed(2).replace(/\.00$/, '') + 'px';
+            if (/^clamp\(/.test(v)) return fallbackPx;
+            return fallbackPx;
+        }
+
+        function normalizePxInForm(formEl) {
+            formEl.querySelectorAll('.px-input').forEach(function (inp) {
+                var raw = String(inp.value || '').trim();
+                if (!raw) return;
+                var val = raw.toLowerCase();
+                if (/^\d+(\.\d+)?px$/.test(val)) {
+                    inp.value = val;
+                    return;
+                }
+                if (/^\d+(\.\d+)?$/.test(val)) {
+                    inp.value = val + 'px';
+                    return;
+                }
+                inp.value = '';
+            });
+        }
+
+        function show(msg, ok) {
+            var el = document.getElementById('brandToast');
+            el.textContent = msg;
+            el.className = 'alert mb-0 py-3 px-4 ' + (ok ? 'alert-success' : 'alert-danger');
+            el.classList.remove('d-none');
+            clearTimeout(brandToastTimer);
+            brandToastTimer = setTimeout(function () {
+                el.classList.add('d-none');
+            }, 4500);
+        }
+
+        async function load() {
+            var r = await fetch('/api/admin/branding');
+            var b = await r.json();
+            if (b.appName) document.getElementById('appName').value = b.appName;
+            if (b.splash) {
+                var s = b.splash;
+                document.getElementById('splashDur').value = s.durationSec;
+                document.getElementById('splashBg').value = toHex(s.backgroundColor) || '#0f241c';
+                document.getElementById('splashSubtitle').value = s.subtitle || '';
+                document.getElementById('splashTitleColor').value = toHex(s.titleColor) || '#d4af37';
+                document.getElementById('splashTitleSize').value = cssSizeToPx(s.titleFontSize, '34px');
+                document.getElementById('splashSubColor').value = toHex(s.subtitleColor) || '#e8dcc4';
+                document.getElementById('splashSubSize').value = cssSizeToPx(s.subtitleFontSize, '14px');
+                document.getElementById('splashSubOp').value = s.subtitleOpacity != null ? s.subtitleOpacity : 0.72;
+                setPreviewOrPlaceholder('prevSplash', 'phSplash', s.logoUrl);
+            }
+            if (b.getStarted) {
+                var g = b.getStarted;
+                document.getElementById('gsTagline').value = g.tagline || '';
+                document.getElementById('gsBg').value = toHex(g.backgroundColor) || '#f6f7f4';
+                document.getElementById('gsTitleColor').value = toHex(g.titleColor) || '#1a2b23';
+                document.getElementById('gsTitleSize').value = cssSizeToPx(g.titleFontSize, '26px');
+                document.getElementById('gsTagColor').value = toHex(g.taglineColor) || '#2d6a4f';
+                document.getElementById('gsTagSize').value = cssSizeToPx(g.taglineFontSize, '15px');
+                setPreviewOrPlaceholder('prevGsLogo', 'phGsLogo', g.logoUrl);
+                setPreviewOrPlaceholder('prevGsBg', 'phGsBg', g.backgroundImageUrl);
+            }
+            if (b.auth) {
+                var a = b.auth;
+                document.getElementById('authPageBg').value = toHex(a.pageBackground) || '#eef1ee';
+                document.getElementById('authBtnBg').value = toHex(a.buttonBg) || '#2d6a4f';
+                document.getElementById('authBtnTx').value = toHex(a.buttonText) || '#ffffff';
+                document.getElementById('authTab').value = toHex(a.tabActiveColor) || '#1a4d3a';
+                document.getElementById('authLink').value = toHex(a.linkColor) || '#2d6a4f';
+                document.getElementById('authCard').value = a.cardBg || 'rgba(255,255,255,0.94)';
+                document.getElementById('authBrandTitleColor').value = toHex(a.brandTitleColor) || '#1a4d3a';
+                document.getElementById('authBrandTitleSize').value = cssSizeToPx(a.brandTitleFontSize, '17px');
+                document.getElementById('authLabelColor').value = toHex(a.labelColor) || '#5c6b63';
+                document.getElementById('authLabelSize').value = cssSizeToPx(a.labelFontSize, '13px');
+                setPreviewOrPlaceholder('prevAuthLogo', 'phAuthLogo', a.logoUrl);
+            }
+            if (b.header) {
+                setPreviewOrPlaceholder('prevHeader', 'phHeader', b.header.logoUrl);
+            }
+        }
+
+        function toHex(c) {
+            if (!c || typeof c !== 'string') return '';
+            if (c.startsWith('#') && c.length >= 4) return c.slice(0, 7);
+            return '';
+        }
+
+        document.getElementById('formAppName').onsubmit = async function (e) {
+            e.preventDefault();
+            showOverlay(true);
+            try {
+                var appName = document.getElementById('appName').value.trim();
+                var r = await fetch('/api/admin/branding/app-name', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ appName })
+                });
+                var d = await r.json();
+                show(d.ok ? 'App name saved.' : (d.error || 'Failed'), r.ok);
+            } catch (err) {
+                show('Request failed. Please try again.', false);
+            } finally {
+                showOverlay(false);
+            }
+        };
+
+        async function postForm(url, formId) {
+            var formEl = document.getElementById(formId);
+            normalizePxInForm(formEl);
+            showOverlay(true);
+            try {
+                var fd = new FormData(formEl);
+                var r = await fetch(url, { method: 'POST', body: fd });
+                var d = await r.json().catch(function () { return {}; });
+                show(r.ok ? 'Saved.' : (d.error || d.details || 'Request failed'), r.ok);
+                if (r.ok) await load();
+            } catch (err) {
+                show('Request failed. Please try again.', false);
+            } finally {
+                showOverlay(false);
+            }
+        }
+
+        document.getElementById('formSplash').onsubmit = function (e) {
+            e.preventDefault();
+            postForm('/api/admin/branding/splash', 'formSplash');
+        };
+        document.getElementById('formGetStarted').onsubmit = function (e) {
+            e.preventDefault();
+            postForm('/api/admin/branding/get-started', 'formGetStarted');
+        };
+        document.getElementById('formAuth').onsubmit = function (e) {
+            e.preventDefault();
+            postForm('/api/admin/branding/auth', 'formAuth');
+        };
+        document.getElementById('formHeader').onsubmit = function (e) {
+            e.preventDefault();
+            postForm('/api/admin/branding/header', 'formHeader');
+        };
+
+        load().catch(function () { show('Could not load branding.', false); });
+    </script>
+</body>
+</html>

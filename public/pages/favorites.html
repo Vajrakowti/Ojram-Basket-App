@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorites - VajramBasket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #f8f9fa; margin: 0; padding: 0; }
+        .navbar-custom {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-logo img { height: 48px; width: auto; object-fit: contain; }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .header-right { display: flex; align-items: center; gap: 18px; }
+        .header-icon { font-size: 1.5rem; color: #333; background: none; border: none; cursor: pointer; position: relative; }
+        .header-icon.fav { color: #e53935; }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            padding: 12px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.3s;
+        }
+        .product-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+        .product-image-container {
+            position: relative;
+            padding-bottom: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        .product-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        .favorite-btn i { color: #e53935; font-size: 1.2rem; }
+        .product-info { padding: 12px 0 0 0; }
+        .product-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 8px; color: #222; }
+        .product-category { color: #666; font-size: 0.9rem; margin-bottom: 8px; }
+        .product-weight { color: #666; font-size: 0.9rem; margin-bottom: 8px; }
+        .product-price { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+        .current-price { font-weight: 600; font-size: 1.2rem; color: #222; }
+        .add-btn {
+            background: #fff;
+            color: #4caf50;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 8px;
+            width: 100%;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .add-btn:hover { background: #4caf50; color: #fff; }
+        @media (max-width: 768px) {
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 12px; }
+            .product-name { font-size: 1rem; }
+            .current-price { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-custom">
+        <div class="header-left">
+            <button class="header-icon" type="button" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <!-- Logo removed -->
+        </div>
+        <div class="header-right">
+            <button class="header-icon fav" type="button" id="goFavorites">
+                <i class="fas fa-heart"></i>
+            </button>
+            <button class="header-icon" type="button">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="container">
+        <h3 class="mt-4">Favorite Products</h3>
+        <div class="products-grid" id="favoritesGrid"></div>
+    </div>
+    <script>
+    async function loadFavorites() {
+        const userDbName = localStorage.getItem('userDbName');
+        const res = await fetch('/api/home/favorites', {
+            headers: userDbName ? { 'x-user-db': userDbName } : {}
+        });
+        const favorites = await res.json();
+        const grid = document.getElementById('favoritesGrid');
+        grid.innerHTML = '';
+        if (favorites.length === 0) {
+            grid.innerHTML = '<div class="text-muted">No favorite products yet.</div>';
+            return;
+        }
+        favorites.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <button class="favorite-btn active" data-id="${product.productId}">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-image-container">
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                </div>
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-category">in ${product.category}</div>
+                    <div class="product-weight">${product.weight ? `${product.weight}${product.weightUnit}` : ''}</div>
+                    <div class="product-price">
+                        <span class="current-price">₹${product.price}</span>
+                    </div>
+                    <button class="add-btn">ADD</button>
+                </div>
+            `;
+            // Unfavorite handler
+            card.querySelector('.favorite-btn').onclick = async function(e) {
+                e.preventDefault();
+                const userDbName = localStorage.getItem('userDbName');
+                const res = await fetch(`/api/home/favorites/${product.productId}`, {
+                    method: 'DELETE',
+                    headers: userDbName ? { 'x-user-db': userDbName } : {}
+                });
+                if (res.ok) {
+                    card.remove();
+                }
+            };
+            grid.appendChild(card);
+        });
+    }
+    loadFavorites();
+    // Header heart icon links to this page
+    document.getElementById('goFavorites').onclick = function() {
+        window.location.href = 'favorites.html';
+    };
+    </script>
+</body>
+</html> 

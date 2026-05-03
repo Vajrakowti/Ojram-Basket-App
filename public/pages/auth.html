@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sign in — VV Farms</title>
+    <style>
+        :root {
+            --auth-page-bg: #eef1ee;
+            --auth-btn-bg: #2d6a4f;
+            --auth-btn-text: #ffffff;
+            --auth-tab-active: #1a4d3a;
+            --auth-link: #2d6a4f;
+            --auth-card-bg: rgba(255, 255, 255, 0.94);
+            --auth-brand-title-color: #1a4d3a;
+            --auth-brand-title-size: 1.05rem;
+            --auth-label-color: #5c6b63;
+            --auth-label-size: 0.8rem;
+            --green: #2d6a4f;
+            --green-dark: #1a4d3a;
+            --text: #1a2b23;
+            --muted: #5c6b63;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { min-height: 100%; }
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            background: var(--auth-page-bg);
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.25rem 1rem 2rem;
+        }
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .brand img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border-radius: 14px;
+        }
+        .brand h1 {
+            font-size: var(--auth-brand-title-size);
+            margin-top: 0.45rem;
+            color: var(--auth-brand-title-color);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--auth-card-bg);
+            border-radius: 20px;
+            padding: 1.35rem 1.25rem 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(45, 106, 79, 0.08);
+        }
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.25rem;
+            background: rgba(232, 235, 230, 0.9);
+            padding: 4px;
+            border-radius: 12px;
+        }
+        .tabs button {
+            flex: 1;
+            border: none;
+            padding: 0.65rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--muted);
+        }
+        .tabs button.active {
+            background: #fff;
+            color: var(--auth-tab-active);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        label {
+            display: block;
+            font-size: var(--auth-label-size);
+            font-weight: 600;
+            color: var(--auth-label-color);
+            margin-bottom: 0.35rem;
+        }
+        .field { margin-bottom: 0.9rem; }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 0.75rem 0.85rem;
+            border: 1px solid #d5ddd7;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.12);
+        }
+        .pw-wrap { position: relative; }
+        .pw-wrap input { padding-right: 2.75rem; }
+        .toggle-pw {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .remember { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+        .link {
+            background: none;
+            border: none;
+            color: var(--auth-link);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--auth-btn-bg);
+            color: var(--auth-btn-text);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.25rem;
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .msg { margin-top: 0.75rem; font-size: 0.88rem; text-align: center; min-height: 1.25rem; }
+        .msg.err { color: #b42318; }
+        .msg.ok { color: var(--green-dark); }
+        .terms { font-size: 0.78rem; color: var(--muted); margin-top: 0.75rem; line-height: 1.4; }
+        .terms a { color: var(--auth-link); font-weight: 600; }
+        #forgotPanel { display: none; }
+        #forgotPanel.visible { display: block; }
+        #mainAuth.hidden { display: none; }
+        .back-row { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="brand">
+            <img id="authBrandLogo" src="/Logo.jpg" alt="VV Farms" width="56" height="56" />
+            <h1 id="authBrandTitle">VV FARMS</h1>
+        </div>
+
+        <div class="card">
+            <div id="mainAuth">
+                <div class="tabs" role="tablist">
+                    <button type="button" class="active" id="tabSignin" role="tab" aria-selected="true">Log In</button>
+                    <button type="button" id="tabSignup" role="tab" aria-selected="false">Sign Up</button>
+                </div>
+
+                <div id="panelSignin" class="panel active" role="tabpanel">
+                    <form id="formSignin">
+                        <div class="field">
+                            <label for="siUser">Username</label>
+                            <input type="text" id="siUser" name="username" autocomplete="username" required pattern="^[A-Za-z\s]+$" title="Letters and spaces only" />
+                        </div>
+                        <div class="field">
+                            <label for="siPass">Password</label>
+                            <div class="pw-wrap">
+                                <input type="password" id="siPass" name="password" autocomplete="current-password" required />
+                                <button type="button" class="toggle-pw" data-target="siPass" aria-label="Show password">Show</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="remember"><input type="checkbox" id="siRemember" /> Remember me</label>
+                            <button type="button" class="link" id="openForgot">Forgot password?</button>
+                        </div>
+                        <button type="submit" class="btn-primary" id="btnSignin">Log In</button>
+                    </form>
+                </div>
+
+                <div id="panelSignup" class="panel" role="tabpanel">
+                    <form id="formSignup">
+                        <div class="field">
+                            <label for="suUser">Username</label>
+                            <input type="text" id="suUser" name="username" required pattern="^[A-Za-z\s]+$" title="Letters and spaces only" />
+                        </div>
+                        <div class="field">
+                            <label for="suEmail">Email</label>
+                            <input type="email" id="suEmail" name="email" required autocomplete="email" />
+                        </div>
+                        <div class="field">
+                            <label for="suPhone">Phone number</label>
+                            <input type="tel" id="suPhone" name="phone" required inputmode="numeric" pattern="^\d+$" title="Digits only" />
+                        </div>
+                        <div class="field">
+                            <label for="suPass">Password</label>
+                            <div class="pw-wrap">
+                                <input type="password" id="suPass" name="password" autocomplete="new-password" required minlength="8" />
+                                <button type="button" class="toggle-pw" data-target="suPass" aria-label="Show password">Show</button>
+                            </div>
+                        </div>
+                        <p class="terms">By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+                        <button type="submit" class="btn-primary" id="btnSignup">Create account</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="forgotPanel">
+                <div class="back-row">
+                    <button type="button" class="link" id="closeForgot">← Back to log in</button>
+                </div>
+                <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;">Enter the email you used to register. We’ll email your username and a new password (email is not case-sensitive).</p>
+                <form id="formForgot">
+                    <div class="field">
+                        <label for="fpEmail">Email</label>
+                        <input type="email" id="fpEmail" required autocomplete="email" />
+                    </div>
+                    <button type="submit" class="btn-primary">Send login details</button>
+                </form>
+            </div>
+
+            <p class="msg" id="authMsg" aria-live="polite"></p>
+        </div>
+    </div>
+
+    <script>
+        (function applyAuthBranding() {
+            fetch('/api/home/branding')
+                .then(function (r) { return r.json(); })
+                .then(function (b) {
+                    var root = document.documentElement;
+                    var a = b.auth || {};
+                    if (b.appName) {
+                        document.getElementById('authBrandTitle').textContent = (b.appName + '').toUpperCase();
+                        document.title = 'Sign in — ' + b.appName;
+                    }
+                    if (a.logoUrl) {
+                        document.getElementById('authBrandLogo').src = a.logoUrl;
+                    }
+                    if (a.pageBackground) root.style.setProperty('--auth-page-bg', a.pageBackground);
+                    if (a.buttonBg) root.style.setProperty('--auth-btn-bg', a.buttonBg);
+                    if (a.buttonText) root.style.setProperty('--auth-btn-text', a.buttonText);
+                    if (a.tabActiveColor) root.style.setProperty('--auth-tab-active', a.tabActiveColor);
+                    if (a.linkColor) root.style.setProperty('--auth-link', a.linkColor);
+                    if (a.cardBg) root.style.setProperty('--auth-card-bg', a.cardBg);
+                    if (a.brandTitleColor) root.style.setProperty('--auth-brand-title-color', a.brandTitleColor);
+                    if (a.brandTitleFontSize) root.style.setProperty('--auth-brand-title-size', a.brandTitleFontSize);
+                    if (a.labelColor) root.style.setProperty('--auth-label-color', a.labelColor);
+                    if (a.labelFontSize) root.style.setProperty('--auth-label-size', a.labelFontSize);
+                })
+                .catch(function () {});
+        })();
+
+        const tabSignin = document.getElementById('tabSignin');
+        const tabSignup = document.getElementById('tabSignup');
+        const panelSignin = document.getElementById('panelSignin');
+        const panelSignup = document.getElementById('panelSignup');
+        const mainAuth = document.getElementById('mainAuth');
+        const forgotPanel = document.getElementById('forgotPanel');
+        const authMsg = document.getElementById('authMsg');
+
+        function showMsg(text, ok) {
+            authMsg.textContent = text || '';
+            authMsg.className = 'msg ' + (ok ? 'ok' : text ? 'err' : '');
+        }
+
+        tabSignin.addEventListener('click', function () {
+            tabSignin.classList.add('active');
+            tabSignup.classList.remove('active');
+            panelSignin.classList.add('active');
+            panelSignup.classList.remove('active');
+            tabSignin.setAttribute('aria-selected', 'true');
+            tabSignup.setAttribute('aria-selected', 'false');
+            showMsg('');
+        });
+        tabSignup.addEventListener('click', function () {
+            tabSignup.classList.add('active');
+            tabSignin.classList.remove('active');
+            panelSignup.classList.add('active');
+            panelSignin.classList.remove('active');
+            tabSignup.setAttribute('aria-selected', 'true');
+            tabSignin.setAttribute('aria-selected', 'false');
+            showMsg('');
+        });
+
+        document.querySelectorAll('.toggle-pw').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const id = btn.getAttribute('data-target');
+                const inp = document.getElementById(id);
+                if (inp.type === 'password') {
+                    inp.type = 'text';
+                    btn.textContent = 'Hide';
+                } else {
+                    inp.type = 'password';
+                    btn.textContent = 'Show';
+                }
+            });
+        });
+
+        document.getElementById('siUser').addEventListener('input', function () {
+            this.value = this.value.replace(/[^A-Za-z\s]/g, '');
+        });
+        document.getElementById('suUser').addEventListener('input', function () {
+            this.value = this.value.replace(/[^A-Za-z\s]/g, '');
+        });
+        document.getElementById('suPhone').addEventListener('input', function () {
+            this.value = this.value.replace(/[^\d]/g, '');
+        });
+
+        document.getElementById('openForgot').addEventListener('click', function () {
+            mainAuth.classList.add('hidden');
+            forgotPanel.classList.add('visible');
+            showMsg('');
+        });
+        document.getElementById('closeForgot').addEventListener('click', function () {
+            forgotPanel.classList.remove('visible');
+            mainAuth.classList.remove('hidden');
+            showMsg('');
+        });
+
+        document.getElementById('formSignin').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const username = document.getElementById('siUser').value.trim();
+            const password = document.getElementById('siPass').value;
+            showMsg('');
+            try {
+                const res = await fetch('/api/user/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showMsg(data.error || 'Login failed', false);
+                    return;
+                }
+                if (document.getElementById('siRemember').checked) {
+                    try { localStorage.setItem('wfarmsRememberUser', username); } catch (x) {}
+                } else {
+                    try { localStorage.removeItem('wfarmsRememberUser'); } catch (x) {}
+                }
+                if (data.userDbName) localStorage.setItem('userDbName', data.userDbName);
+                window.location.href = data.redirect || '/pages/home.html';
+            } catch (err) {
+                showMsg('Network error', false);
+            }
+        });
+
+        document.getElementById('formSignup').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const username = document.getElementById('suUser').value.trim();
+            const email = document.getElementById('suEmail').value.trim();
+            const phone = document.getElementById('suPhone').value.trim();
+            const password = document.getElementById('suPass').value;
+            showMsg('');
+            try {
+                const res = await fetch('/api/user/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, phone, password })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showMsg(data.error || data.details || 'Sign up failed', false);
+                    return;
+                }
+                showMsg(data.message || 'Account created.', true);
+                tabSignin.click();
+                document.getElementById('siUser').value = username;
+                document.getElementById('siPass').value = '';
+                document.getElementById('formSignup').reset();
+            } catch (err) {
+                showMsg('Network error', false);
+            }
+        });
+
+        document.getElementById('formForgot').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('fpEmail').value.trim();
+            showMsg('');
+            try {
+                const res = await fetch('/api/user/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showMsg(data.error + (data.details ? ': ' + data.details : ''), false);
+                    return;
+                }
+                showMsg(data.message, true);
+                document.getElementById('fpEmail').value = '';
+            } catch (err) {
+                showMsg('Network error', false);
+            }
+        });
+
+        (function () {
+            try {
+                const u = localStorage.getItem('wfarmsRememberUser');
+                if (u) document.getElementById('siUser').value = u;
+            } catch (x) {}
+        })();
+    </script>
+</body>
+</html>
